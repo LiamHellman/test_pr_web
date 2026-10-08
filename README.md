@@ -1,15 +1,15 @@
 # Liam Hellman — A personal network
 
-A bilingual personal portfolio centered on industrial relations, set in an illustrated Montréal-inspired city. Built with dependency-free HTML, CSS, JavaScript, and SVG.
+A bilingual personal portfolio centered on industrial relations, presented as a raised, illustrated network map inspired by Montréal's early métro diagrams. Built with dependency-free HTML, CSS, JavaScript, and SVG.
 
 ## Explore
 
-- Six stations: introduction, people and work, experience, education, projects, and personal interests.
-- Three animated metro trains and walking characters.
-- Guided train tour, day/night toggle, and animation pause control.
+- Six meaningful Montréal stations: introduction, education, experience, industrial relations, projects, and personal interests.
+- Four animated métro trains, small street scenes, and walking characters layered behind the interactive stops.
+- A restrained interface with only résumé, contact, and language controls.
 - English/French content and downloadable résumés.
 - Keyboard-operable stations, native modal focus management, and automatic reduced-motion support.
-- Responsive layout with a horizontally scrollable city on small screens and separate station navigation.
+- Responsive layout with a Berri–UQAM-centered, horizontally pannable map on small screens.
 
 ## Run locally
 

@@ -3,83 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore Liam Hellman's world: industrial relations, people, work, and technology. A bilingual portfolio inspired by Montréal.">
-  <meta name="theme-color" content="#f5f3ec">
+  <meta name="description" content="Liam Hellman's bilingual industrial relations portfolio, mapped across Montréal.">
+  <meta name="theme-color" content="#16211d">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>Liam Hellman — People, work & everything between</title>
+  <title>Liam Hellman — A Montréal network</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#station-list" data-i18n="skip">Skip to stations</a>
-  <header class="header">
-    <a class="brand" href="./" aria-label="Liam Hellman home"><span class="monogram">lh<span>↗</span></span><span>Liam Hellman<span class="brand-sub" data-i18n="brandSub">A personal network</span></span></a>
-    <nav class="header-links" aria-label="Main navigation">
-      <a href="assets/Liam-Hellman-CV-EN.pdf" id="cv-link" target="_blank" rel="noopener" data-i18n="resume">Résumé ↗</a>
-      <a href="mailto:liamhellman@gmail.com" data-i18n="contact">Say hello ↗</a>
-      <button id="language" class="language" aria-label="Passer au français">FR</button>
+  <a class="skip-link" href="#map" data-i18n="skip">Skip to the map</a>
+  <header class="topbar">
+    <a class="identity" href="./" aria-label="Liam Hellman home">
+      <span class="metro-mark" aria-hidden="true">M</span>
+      <span><strong>Liam Hellman</strong><small data-i18n="role">Industrial relations · Montréal</small></span>
+    </a>
+    <nav class="actions" aria-label="Main navigation">
+      <a id="cv-link" href="assets/Liam-Hellman-CV-EN.pdf" target="_blank" rel="noopener"><span data-i18n="cv">Résumé</span><b aria-hidden="true">↗</b></a>
+      <a href="mailto:liamhellman@gmail.com"><span data-i18n="contact">Contact</span><b aria-hidden="true">↗</b></a>
+      <button id="language" aria-label="Passer au français">FR</button>
     </nav>
   </header>
-  <main>
-    <section class="world" aria-labelledby="intro-title">
-      <div class="intro">
-        <div class="eyebrow"><span class="live-dot"></span><span data-i18n="location">MONTRÉAL, QUÉBEC</span></div>
-        <h1 id="intro-title" data-i18n="headline">People.<br>Work.<br><em>Possibilities.</em></h1>
-        <p class="intro-copy" data-i18n="intro">I’m Liam. An industrial relations student with a computer science background and a curiosity for what makes people and workplaces thrive.</p>
-        <button class="tour-button" id="tour"><span data-i18n="tour">Take the scenic route</span><span aria-hidden="true">↗</span></button>
-        <p class="hint" data-i18n="introHint">Or pick a station. Every stop has a story.</p>
-        <div class="ticket"><div class="ticket-top"><span data-i18n="ticket">ONE CURIOUS MIND</span><span>↗</span></div><div class="ticket-bottom"><span data-i18n="ticketSub">People + technology</span><span class="ticket-bars" aria-hidden="true"></span></div></div>
+
+  <main class="network">
+    <section class="map-frame" aria-labelledby="map-heading">
+      <div class="map-plaque">
+        <p data-i18n="eyebrow">RÉSEAU PERSONNEL · PERSONAL NETWORK</p>
+        <h1 id="map-heading"><span data-i18n="name">Liam Hellman</span><small data-i18n="mapTitle">People, work, and the routes between them.</small></h1>
       </div>
-      <div class="map-panel">
-        <div class="map-top"><span class="map-caption" data-i18n="mapCaption">A LITTLE CITY. A FEW BIG IDEAS.</span><div class="map-tools"><button id="motion" aria-pressed="false" data-i18n="pause">Pause motion</button><button id="theme" aria-pressed="false" aria-label="Switch to night"><span id="theme-icon" aria-hidden="true">☾</span><span class="theme-label" data-i18n="night">Night</span></button></div></div>
-        <div class="map-scroll" id="map-scroll" tabindex="0" role="region" aria-label="Interactive city map; scroll horizontally on small screens">
-          <svg id="city" viewBox="0 0 1100 710" role="group" aria-labelledby="city-title city-desc">
-            <title id="city-title">Liam’s Montréal</title><desc id="city-desc">An illustrated city with six interactive metro stations, moving trains, and people. Use the station buttons below to explore each story.</desc>
-            <defs>
-              <pattern id="grid" width="35" height="35" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#aab6a2" opacity=".28"/></pattern>
-              <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="6" flood-color="#3b5645" flood-opacity=".12"/></filter>
-              <symbol id="tree" viewBox="0 0 45 65"><ellipse cx="23" cy="57" rx="19" ry="7" fill="#46694d" opacity=".12"/><path d="M23 25v32" stroke="#7a6951" stroke-width="5"/><path d="M23 40L13 29m10 6 10-14" stroke="#7a6951" stroke-width="3"/><ellipse cx="23" cy="22" rx="21" ry="23" fill="#85a680"/><ellipse cx="17" cy="16" rx="13" ry="17" fill="#a8be94"/></symbol>
-              <symbol id="person" viewBox="0 0 18 34"><ellipse cx="9" cy="31" rx="8" ry="3" fill="#263e31" opacity=".15"/><path d="M6 21l-1 9m7-9 1 9" stroke="#344956" stroke-width="3.5" stroke-linecap="round"/><path d="M5 12l-3 8m11-8 3 8" stroke="#c98b6a" stroke-width="3" stroke-linecap="round"/><rect x="4" y="9" width="10" height="14" rx="4" fill="currentColor"/><circle cx="9" cy="5" r="4.5" fill="#d6a47e"/><path d="M5 4q2-7 8-1" stroke="#443c35" stroke-width="3" fill="none"/></symbol>
-            </defs>
-            <rect width="1100" height="710" fill="url(#grid)"/>
-            <g id="terrain">
-              <path d="M-40 607Q165 542 342 615T734 626T1150 589v160H-40Z" fill="#cee3df"/>
-              <path d="M-20 634Q170 570 344 640T742 650T1140 617" fill="none" stroke="#edf6f1" stroke-width="3" stroke-dasharray="25 18"/>
-              <path d="M890 636q65-25 134-20m-606 56q38 8 73 3" stroke="#a8cdc8" stroke-width="2" fill="none"/>
-              <path d="M73 67Q190 10 345 58l57 72-79 87-219-6-58-80Z" fill="#e0e8d5"/>
-              <path d="M743 69q179-31 267 65l-8 182-110 30-114-113Z" fill="#e7e6d9"/>
-              <path d="M427 283l120-88 227 59 12 195-85 99-228-59Z" fill="#eae5dc"/>
-              <path d="M80 381l165-59 128 93-25 135-200 23-76-78Z" fill="#e8e5d9"/>
-              <path d="M77 562L961 75M101 302l861 234M381 47l99 508M769 78l-12 473" fill="none" stroke="#fdfbf6" stroke-width="22" stroke-linecap="round"/>
-              <path d="M77 562L961 75M101 302l861 234" fill="none" stroke="#d6d8c9" stroke-width="1.5" stroke-dasharray="8 9"/>
-            </g>
-            <g class="routes" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M160 480L160 388Q160 335 213 335H410Q468 335 468 393V410Q468 460 518 460H700Q840 460 840 320V220Q840 130 750 130H585H355Q265 130 265 150" stroke="#fffdf7" stroke-width="20"/>
-              <path id="main-route" d="M160 480L160 388Q160 335 213 335H410Q468 335 468 393V410Q468 460 518 460H700Q840 460 840 320V220Q840 130 750 130H585H355Q265 130 265 150" stroke="#c8664d" stroke-width="8"/>
-              <path d="M80 220H315Q365 220 410 265L585 440Q645 500 750 500H988" stroke="#fffdf7" stroke-width="19"/>
-              <path id="blue-route" d="M80 220H315Q365 220 410 265L585 440Q645 500 750 500H988" stroke="#608bab" stroke-width="7"/>
-              <path d="M340 555V490Q340 425 410 335L520 202Q565 150 585 130L642 54" stroke="#fffdf7" stroke-width="18"/>
-              <path id="green-route" d="M340 555V490Q340 425 410 335L520 202Q565 150 585 130L642 54" stroke="#729179" stroke-width="6"/>
-            </g>
-            <g id="scenery"></g>
-            <g id="walkers" aria-hidden="true"></g>
-            <g id="trains" aria-hidden="true"></g>
-            <g id="stations"></g>
-            <g id="map-notes" aria-hidden="true"><text x="82" y="82" class="map-note">MONTRÉAL, REIMAGINED</text><text x="70" y="660" class="river-note">Le Saint-Laurent</text><g transform="translate(1005 70)"><path d="M0 30V-8m-7 11 7-11 7 11" fill="none" stroke="#7e8979" stroke-width="1.5"/><text x="-4" y="-18" class="map-note">N</text></g><text x="822" y="667" class="map-note">NOT TO SCALE. FULL OF POSSIBILITY.</text></g>
-          </svg>
-        </div>
-        <div class="map-bottom"><div class="legend"><span><i class="red"></i><span data-i18n="linePeople">People & work</span></span><span><i class="blue"></i><span data-i18n="lineTech">Technology</span></span><span><i class="green"></i><span data-i18n="lineLife">Everyday life</span></span></div><span class="explore-hint" data-i18n="mapHint">Click a stop to explore ↗</span></div>
+      <div class="map-viewport" id="map-viewport" tabindex="0" role="region" aria-label="Interactive Montréal portfolio map; scroll horizontally on small screens">
+        <svg id="map" viewBox="0 0 1200 760" role="group" aria-labelledby="svg-title svg-desc">
+          <title id="svg-title">Liam Hellman’s Montréal network</title>
+          <desc id="svg-desc">An old Montréal metro inspired map with six interactive stations connected by the green, orange, blue, and yellow lines.</desc>
+          <defs>
+            <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f3efdf"/><stop offset="1" stop-color="#ded6bf"/></linearGradient>
+            <linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b8d3cf"/><stop offset="1" stop-color="#8fb8b6"/></linearGradient>
+            <linearGradient id="node" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffef7"/><stop offset=".65" stop-color="#e8e1cc"/><stop offset="1" stop-color="#b9ae92"/></linearGradient>
+            <pattern id="paper-grain" width="34" height="34" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r=".7" fill="#685f4d" opacity=".08"/><circle cx="24" cy="18" r=".5" fill="#685f4d" opacity=".06"/></pattern>
+            <filter id="line-depth" x="-20%" y="-20%" width="150%" height="160%"><feDropShadow dx="0" dy="7" stdDeviation="2.5" flood-color="#433e33" flood-opacity=".34"/></filter>
+            <filter id="object-shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="5" flood-color="#323028" flood-opacity=".28"/></filter>
+            <symbol id="person" viewBox="0 0 18 35"><ellipse cx="9" cy="33" rx="7" ry="2" fill="#2c302b" opacity=".2"/><path d="M6 22l-1 9m7-9 1 9" stroke="#263b3c" stroke-width="3.4" stroke-linecap="round"/><path d="M5 13l-3 7m11-7 3 7" stroke="#b87c5e" stroke-width="2.8" stroke-linecap="round"/><rect x="4" y="10" width="10" height="14" rx="3" fill="currentColor"/><circle cx="9" cy="6" r="4.3" fill="#c99771"/><path d="M5 5q2-6 8-1" stroke="#3b322c" stroke-width="2.7" fill="none"/></symbol>
+          </defs>
+
+          <rect width="1200" height="760" rx="8" fill="url(#paper)"/>
+          <rect width="1200" height="760" rx="8" fill="url(#paper-grain)"/>
+          <g id="geography" aria-hidden="true">
+            <path d="M0 588Q145 552 281 588T551 627T834 605T1200 555V760H0Z" fill="url(#water)"/>
+            <path d="M-10 614Q147 577 291 615T562 654T840 633T1210 583" fill="none" stroke="#e5eeee" stroke-width="3" stroke-dasharray="24 18" opacity=".78"/>
+            <path d="M92 442L167 194Q188 124 272 97L667 39Q785 23 886 93L1114 254Q1181 302 1129 381L1015 548Q985 592 917 592L306 596Q223 595 168 545Z" fill="#e7e0ca" stroke="#c9c0a8" stroke-width="2"/>
+            <path d="M108 444L180 206Q199 146 276 119L661 63Q770 48 862 110L1095 273Q1144 306 1108 362L1000 526Q974 566 910 566L314 571Q242 569 190 524Z" fill="#ece7d7"/>
+            <path d="M176 224q82-137 205-87 50 20 51 103-132 49-256-16Z" fill="#b6bea5" opacity=".72"/>
+            <path d="M207 211q59-89 135-55 35 16 42 70-92 37-177-15Z" fill="#9fac91" opacity=".75"/>
+            <text x="245" y="191" class="geo-label" data-i18n-svg="mountRoyal">MONT ROYAL</text>
+            <path d="M781 543q89-44 186 4l-32 80q-87 28-175-8Z" fill="#e3ddc8" stroke="#bfb69d"/>
+            <path d="M705 514l149 117M747 480l153 120" stroke="#aa9f85" stroke-width="4" opacity=".55"/>
+            <text x="1010" y="697" class="water-label">FLEUVE SAINT-LAURENT</text>
+            <text x="961" y="529" class="geo-label" data-i18n-svg="oldPort">VIEUX-MONTRÉAL</text>
+          </g>
+
+          <g class="city-blocks" aria-hidden="true" filter="url(#object-shadow)">
+            <g transform="translate(410 476)"><path d="M0 18 36 0l36 18-36 18Z" fill="#d6ccb4"/><path d="M0 18v41l36 18V36Z" fill="#aa9b7e"/><path d="M36 36l36-18v41L36 77Z" fill="#7f8f7e"/></g>
+            <g transform="translate(453 446)"><path d="M0 22 44 0l44 22-44 22Z" fill="#c6b99c"/><path d="M0 22v58l44 22V44Z" fill="#9c8c72"/><path d="M44 44l44-22v58l-44 22Z" fill="#60776d"/></g>
+            <g transform="translate(505 489)"><path d="M0 17 33 0l33 17-33 17Z" fill="#d8caa9"/><path d="M0 17v43l33 17V34Z" fill="#b59c76"/><path d="M33 34l33-17v43L33 77Z" fill="#7d8c7e"/></g>
+            <g transform="translate(900 465)"><path d="M0 20 40 0l40 20-40 20Z" fill="#d8cdb4"/><path d="M0 20v49l40 20V40Z" fill="#9d8e73"/><path d="M40 40l40-20v49l-40 20Z" fill="#70867a"/></g>
+          </g>
+
+          <g class="route-shadows" fill="none" stroke="#fff9e8" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M590 105C620 173 626 253 645 330S678 423 680 480C665 551 600 609 535 660"/>
+            <path d="M205 260C330 241 480 197 590 105C674 74 772 96 845 150"/>
+            <path d="M295 650C411 625 535 589 680 480C768 431 866 414 1010 430"/>
+            <path d="M680 480C753 520 822 565 900 640"/>
+          </g>
+          <g class="routes" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" filter="url(#line-depth)">
+            <path id="orange-route" d="M590 105C620 173 626 253 645 330S678 423 680 480C665 551 600 609 535 660" stroke="#e86f32"/>
+            <path id="blue-route" d="M205 260C330 241 480 197 590 105C674 74 772 96 845 150" stroke="#1677a8"/>
+            <path id="green-route" d="M295 650C411 625 535 589 680 480C768 431 866 414 1010 430" stroke="#11815a"/>
+            <path id="yellow-route" d="M680 480C753 520 822 565 900 640" stroke="#e4bf22"/>
+          </g>
+
+          <g id="minor-stations" aria-hidden="true"></g>
+          <g id="trains" aria-hidden="true"></g>
+          <g id="station-scenes" aria-hidden="true"></g>
+          <g id="walkers" aria-hidden="true"></g>
+          <g id="stations"></g>
+
+          <g class="map-key" aria-hidden="true" transform="translate(54 674)">
+            <rect width="332" height="48" rx="4" fill="#f8f3e3" stroke="#bdb39b"/>
+            <circle cx="25" cy="24" r="10" fill="#20342d"/><text x="25" y="28" text-anchor="middle" class="key-m">M</text>
+            <text x="46" y="20" class="key-main">MÉTRO DE MONTRÉAL</text><text x="46" y="34" class="key-sub">CARTE PERSONNELLE · PERSONAL MAP</text>
+            <path d="M248 13h67M248 24h67M248 35h67" stroke-width="4"/><path d="M248 13h16" stroke="#11815a" stroke-width="4"/><path d="M265 13h16" stroke="#e86f32" stroke-width="4"/><path d="M282 13h16" stroke="#1677a8" stroke-width="4"/><path d="M299 13h16" stroke="#e4bf22" stroke-width="4"/>
+          </g>
+          <g class="north" aria-hidden="true" transform="translate(1125 85)"><path d="M0 47V0m-8 13 8-13 8 13" fill="none" stroke="#4f554b" stroke-width="2"/><text x="0" y="-9" text-anchor="middle">N</text></g>
+        </svg>
       </div>
-    </section>
-    <section class="station-section" aria-label="Explore the stations">
-      <div class="station-heading"><span data-i18n="stationsHeading">YOUR NEXT STOP</span><span><span id="visited-count">0</span><span data-i18n="visited"> / 6 explored</span></span></div>
-      <nav id="station-list" class="station-list" aria-label="Portfolio stations"></nav>
+      <div class="map-caption">
+        <span><i></i><span data-i18n="hint">Select a raised station to explore.</span></span>
+        <span data-i18n="caption">Inspired by Montréal’s original métro diagrams · Map not to scale</span>
+      </div>
     </section>
   </main>
-  <footer><span>© <span id="year">2026</span> Liam Hellman</span><span data-i18n="footer">Built with curiosity. Rooted in Montréal.</span><a href="https://www.linkedin.com/in/liam-hellman" target="_blank" rel="noopener">LinkedIn ↗</a></footer>
-  <dialog id="story" aria-labelledby="story-title"><div class="story-top"><span id="story-tag"></span><button id="close-story" aria-label="Close story">✕</button></div><div id="story-content"></div><div class="story-bottom"><button id="prev" data-i18n="previous">← Previous stop</button><button id="next" data-i18n="next">Next stop →</button></div></dialog>
+
+  <dialog id="story" aria-labelledby="story-title">
+    <div class="story-head"><span id="story-line"></span><button id="close-story" aria-label="Close">×</button></div>
+    <div id="story-content"></div>
+    <div class="story-nav"><button id="previous" data-i18n="previous">← Previous</button><button id="next" data-i18n="next">Next station →</button></div>
+  </dialog>
   <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
-  <noscript><div class="noscript">Liam Hellman — Industrial relations student at Université de Montréal with a computer science background. Experience: Croix Bleue Canassurance, Bar Rosemont, XP-MTL. Contact: <a href="mailto:liamhellman@gmail.com">liamhellman@gmail.com</a>. <a href="assets/Liam-Hellman-CV-EN.pdf">English résumé</a> · <a href="assets/Liam-Hellman-CV-FR.pdf">CV français</a>. Enable JavaScript to explore the city.</div></noscript>
+  <noscript><div class="noscript">Liam Hellman — Industrial relations student at Université de Montréal. <a href="assets/Liam-Hellman-CV-EN.pdf">English résumé</a> · <a href="assets/Liam-Hellman-CV-FR.pdf">CV français</a>.</div></noscript>
 </body>
 </html>
