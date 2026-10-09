@@ -6,8 +6,9 @@ A bilingual personal portfolio centered on industrial relations, presented as a 
 
 - Six meaningful stops on a geographically coherent Montréal network: introduction, education, experience, industrial relations, projects, and personal interests.
 - Six linked city landmarks, including Roger-Gaudry pavilion, Bar Rosemont, the Berri and Guimard entrances, Place des Arts, and the Montréal Biosphere.
-- Four line-aware métro trains that follow the tracks, ease between stops, and dwell at stations.
-- Pedestrians who move only between featured stations and their paired landmarks after a train arrives.
+- Four line-aware pixel métro trains that follow the tracks, ease between stops, and dwell at stations.
+- Two-frame pixel pedestrians who move only between featured stations and their paired landmarks after a train arrives.
+- Arrival-triggered pixel light sequences contained inside each station and landmark icon.
 - A restrained interface with only résumé, contact, and language controls.
 - English/French content and downloadable résumés.
 - Keyboard-operable stations, native modal focus management, and automatic reduced-motion support.
@@ -22,6 +23,12 @@ python3 -m http.server 4173
 ```
 
 Open `http://localhost:4173`. No install or build step is required.
+
+Run the dependency-free animation-bound check with:
+
+```sh
+node tests/pixel-bounds.mjs
+```
 
 ## Publish on GitHub Pages
 

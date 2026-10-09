@@ -227,12 +227,12 @@ function landmarkMarkup(stop, index) {
   const caption = escapeText(stop.landmark[language].toUpperCase());
   const attributes = `class="landmark line-${stop.line}${index === activeStop && $('#story').open ? ' active' : ''}" data-stop="${index}" role="button" tabindex="0" aria-label="${caption} — ${escapeText(current(stop).station)}"`;
   const templates = {
-    udem: `<g ${attributes} transform="translate(130 125)"><rect class="landmark-hit" x="-8" y="-8" width="126" height="108"/><path class="landmark-outline" d="M8 74V31L56 9l51 22v43Z"/><path class="landmark-accent" d="M49 9h15v65H49Z"/><path class="landmark-detail" d="M17 42h24m-24 12h24m32-12h25M73 54h25M17 66h24m32 0h25"/><text class="landmark-caption" x="57" y="92" text-anchor="middle" textLength="108" lengthAdjust="spacingAndGlyphs">${caption}</text></g>`,
-    rosemont: `<g ${attributes} transform="translate(770 175)"><rect class="landmark-hit" x="-8" y="-8" width="126" height="108"/><rect class="landmark-outline" x="8" y="20" width="96" height="58"/><path class="landmark-accent" d="M4 38h104v13H4Z"/><path class="landmark-detail" d="M17 27h20v11H17zm29 0h20v11H46zm29 0h20v11H75zM19 57h28v21m18-21h27v21"/><text class="landmark-caption" x="56" y="93" text-anchor="middle">${caption}</text></g>`,
-    berri: `<g ${attributes} transform="translate(650 276)"><rect class="landmark-hit" x="-8" y="-8" width="112" height="102"/><rect class="landmark-accent" x="35" y="2" width="30" height="29"/><text class="landmark-m" x="50" y="22" text-anchor="middle">M</text><path class="landmark-outline" d="M9 73h82L75 43H25Z"/><path class="landmark-detail" d="M27 47h46M22 54h56M17 61h66M12 68h76"/><text class="landmark-caption" x="50" y="89" text-anchor="middle">${caption}</text></g>`,
-    pda: `<g ${attributes} transform="translate(380 325)"><rect class="landmark-hit" x="-8" y="-8" width="128" height="110"/><rect class="landmark-outline" x="6" y="28" width="105" height="49"/><path class="landmark-accent" d="M17 40h83v14H17Z"/><path class="landmark-detail" d="M17 61h83M29 61v16m19-16v16m20-16v16m20-16v16"/><text class="landmark-caption" x="58" y="93" text-anchor="middle">${caption}</text></g>`,
-    square: `<g ${attributes} transform="translate(300 580)"><rect class="landmark-hit" x="-8" y="-8" width="120" height="94"/><path class="landmark-detail" d="M18 65V29Q18 10 35 10M94 65V29Q94 10 77 10M35 10q21 18 42 0M27 34h58"/><circle class="landmark-accent" cx="35" cy="10" r="4"/><circle class="landmark-accent" cx="77" cy="10" r="4"/><path class="landmark-outline" d="M9 65h94v10H9Z"/><text class="landmark-caption" x="56" y="89" text-anchor="middle">${caption}</text></g>`,
-    drapeau: `<g ${attributes} transform="translate(945 450)"><rect class="landmark-hit" x="-8" y="-8" width="126" height="112"/><circle class="landmark-outline" cx="57" cy="45" r="39"/><g class="landmark-detail"><ellipse cx="57" cy="45" rx="35" ry="12"/><ellipse cx="57" cy="45" rx="35" ry="25"/><path d="M22 45h70M57 6v78M29 20l56 50M29 70l56-50"/></g><text class="landmark-caption" x="57" y="99" text-anchor="middle">${caption}</text></g>`
+    udem: `<g ${attributes} transform="translate(130 125)"><rect class="landmark-hit" x="-8" y="-8" width="126" height="108"/><path class="landmark-outline" d="M8 74V31L56 9l51 22v43Z"/><path class="landmark-accent" d="M49 9h15v65H49Z"/><g class="landmark-pixels" aria-hidden="true"><rect class="pixel-paper" x="54" y="17" width="5" height="6"/><rect class="pixel-light" x="17" y="40" width="10" height="6"/><rect class="pixel-light pixel-step-2" x="31" y="40" width="10" height="6"/><rect class="pixel-light pixel-step-3" x="73" y="40" width="10" height="6"/><rect class="pixel-light pixel-step-4" x="88" y="40" width="10" height="6"/><rect class="pixel-light pixel-step-3" x="17" y="54" width="10" height="6"/><rect class="pixel-light pixel-step-4" x="31" y="54" width="10" height="6"/><rect class="pixel-light" x="73" y="54" width="10" height="6"/><rect class="pixel-light pixel-step-2" x="88" y="54" width="10" height="6"/></g><text class="landmark-caption" x="57" y="92" text-anchor="middle" textLength="108" lengthAdjust="spacingAndGlyphs">${caption}</text></g>`,
+    rosemont: `<g ${attributes} transform="translate(770 175)"><rect class="landmark-hit" x="-8" y="-8" width="126" height="108"/><rect class="landmark-outline" x="8" y="20" width="96" height="58"/><path class="landmark-accent" d="M4 38h104v13H4Z"/><g class="landmark-pixels" aria-hidden="true"><rect class="pixel-light" x="17" y="27" width="12" height="7"/><rect class="pixel-light pixel-step-2" x="35" y="27" width="12" height="7"/><rect class="pixel-light pixel-step-3" x="65" y="27" width="12" height="7"/><rect class="pixel-light pixel-step-4" x="83" y="27" width="12" height="7"/><rect class="pixel-paper" x="14" y="42" width="8" height="5"/><rect class="pixel-paper" x="32" y="42" width="8" height="5"/><rect class="pixel-paper" x="50" y="42" width="8" height="5"/><rect class="pixel-paper" x="68" y="42" width="8" height="5"/><rect class="pixel-paper" x="86" y="42" width="8" height="5"/><rect class="pixel-dark" x="19" y="58" width="28" height="20"/><rect class="pixel-dark" x="65" y="58" width="27" height="20"/></g><text class="landmark-caption" x="56" y="93" text-anchor="middle">${caption}</text></g>`,
+    berri: `<g ${attributes} transform="translate(650 276)"><rect class="landmark-hit" x="-8" y="-8" width="112" height="102"/><rect class="landmark-accent" x="35" y="2" width="30" height="29"/><text class="landmark-m" x="50" y="22" text-anchor="middle">M</text><path class="landmark-outline" d="M9 73h82L75 43H25Z"/><g class="landmark-pixels" aria-hidden="true"><rect class="pixel-light" x="27" y="47" width="46" height="4"/><rect class="pixel-light pixel-step-2" x="22" y="55" width="56" height="4"/><rect class="pixel-light pixel-step-3" x="17" y="63" width="66" height="4"/><rect class="pixel-paper" x="39" y="6" width="4" height="4"/><rect class="pixel-paper" x="57" y="6" width="4" height="4"/></g><text class="landmark-caption" x="50" y="89" text-anchor="middle">${caption}</text></g>`,
+    pda: `<g ${attributes} transform="translate(380 325)"><rect class="landmark-hit" x="-8" y="-8" width="128" height="110"/><rect class="landmark-outline" x="6" y="28" width="105" height="49"/><path class="landmark-accent" d="M17 40h83v14H17Z"/><g class="landmark-pixels" aria-hidden="true"><rect class="pixel-paper" x="22" y="44" width="8" height="6"/><rect class="pixel-paper" x="37" y="44" width="8" height="6"/><rect class="pixel-paper" x="52" y="44" width="8" height="6"/><rect class="pixel-paper" x="67" y="44" width="8" height="6"/><rect class="pixel-paper" x="82" y="44" width="8" height="6"/><rect class="pixel-light" x="20" y="62" width="11" height="8"/><rect class="pixel-light pixel-step-2" x="37" y="62" width="11" height="8"/><rect class="pixel-light pixel-step-3" x="67" y="62" width="11" height="8"/><rect class="pixel-light pixel-step-4" x="84" y="62" width="11" height="8"/></g><text class="landmark-caption" x="58" y="93" text-anchor="middle">${caption}</text></g>`,
+    square: `<g ${attributes} transform="translate(300 580)"><rect class="landmark-hit" x="-8" y="-8" width="120" height="98"/><path class="landmark-detail" d="M18 65V29Q18 10 35 10M94 65V29Q94 10 77 10M35 10q21 18 42 0M27 34h58"/><g class="landmark-pixels" aria-hidden="true"><rect class="pixel-light" x="31" y="6" width="8" height="8"/><rect class="pixel-light pixel-step-2" x="73" y="6" width="8" height="8"/><rect class="pixel-light pixel-step-3" x="25" y="31" width="6" height="6"/><rect class="pixel-light pixel-step-4" x="81" y="31" width="6" height="6"/></g><path class="landmark-outline" d="M9 65h94v10H9Z"/><text class="landmark-caption" x="56" y="89" text-anchor="middle">${caption}</text></g>`,
+    drapeau: `<g ${attributes} transform="translate(945 450)"><rect class="landmark-hit" x="-8" y="-8" width="126" height="112"/><circle class="landmark-outline" cx="57" cy="45" r="39"/><g class="landmark-detail"><ellipse cx="57" cy="45" rx="35" ry="12"/><ellipse cx="57" cy="45" rx="35" ry="25"/><path d="M22 45h70M57 6v78M29 20l56 50M29 70l56-50"/></g><g class="landmark-pixels" aria-hidden="true"><rect class="pixel-light" x="28" y="24" width="6" height="6"/><rect class="pixel-light pixel-step-2" x="80" y="27" width="6" height="6"/><rect class="pixel-light pixel-step-3" x="33" y="63" width="6" height="6"/><rect class="pixel-light pixel-step-4" x="75" y="66" width="6" height="6"/></g><text class="landmark-caption" x="57" y="99" text-anchor="middle">${caption}</text></g>`
   };
   return templates[stop.id];
 }
@@ -249,7 +249,7 @@ function renderStations() {
     return `<g class="feature-stop line-${stop.line}${active}" data-stop="${index}" role="button" tabindex="0" aria-label="${escapeText(data.station)} — ${escapeText(data.story)}">
       <line class="label-leader" x1="${leader[0]}" y1="${leader[1]}" x2="${leader[2]}" y2="${leader[3]}"/>
       <g class="stop-label"><rect class="label-safe" x="${x}" y="${y}" width="${width}" height="40"/><text class="stop-name" x="${x + 8}" y="${y + 16}">${escapeText(data.station)}</text><text class="stop-story" x="${x + 8}" y="${y + 30}">${escapeText(data.story)}</text><line class="label-rule" x1="${x + 8}" y1="${y + 36}" x2="${x + 48}" y2="${y + 36}"/></g>
-      <circle class="stop-hit" cx="${stop.x}" cy="${stop.y}" r="30"/><circle class="stop-arrival" cx="${stop.x}" cy="${stop.y}" r="18"/><circle class="stop-outer" cx="${stop.x}" cy="${stop.y}" r="15"/><circle class="stop-inner" cx="${stop.x}" cy="${stop.y}" r="7"/>
+      <circle class="stop-hit" cx="${stop.x}" cy="${stop.y}" r="30"/><circle class="stop-outer" cx="${stop.x}" cy="${stop.y}" r="15"/><g class="stop-pixel-core" aria-hidden="true"><rect class="stop-core-1" x="${stop.x - 6}" y="${stop.y - 6}" width="5" height="5"/><rect class="stop-core-2" x="${stop.x + 1}" y="${stop.y - 6}" width="5" height="5"/><rect class="stop-core-3" x="${stop.x - 6}" y="${stop.y + 1}" width="5" height="5"/><rect class="stop-core-4" x="${stop.x + 1}" y="${stop.y + 1}" width="5" height="5"/></g>
     </g>`;
   }).join('');
 }
@@ -264,6 +264,15 @@ function renderStory() {
 function renderMapTargets() {
   renderLandmarks();
   renderStations();
+  activeArrivalIds.forEach(id => {
+    const index = stops.findIndex(stop => stop.id === id);
+    document.querySelectorAll(`[data-stop="${index}"]`).forEach(element => element.classList.add('arriving'));
+  });
+}
+
+function syncMotionPauseState() {
+  const shouldPause = prefersReducedMotion.matches || document.hidden || $('#story').open;
+  $('#metro-map').classList.toggle('motion-paused', shouldPause);
 }
 
 function openStop(index) {
@@ -271,6 +280,7 @@ function openStop(index) {
   renderStory();
   if (!$('#story').open) $('#story').showModal();
   renderMapTargets();
+  syncMotionPauseState();
   $('#announcement').textContent = `${language === 'en' ? 'Arrived at' : 'Arrivée à'} ${current(stops[activeStop]).station}`;
   $('#close-story').focus({preventScroll: true});
 }
@@ -323,7 +333,20 @@ function createTrain(spec) {
   const path = $(`#${spec.pathId}`);
   const group = document.createElementNS(svgNS, 'g');
   group.classList.add('train');
-  group.innerHTML = `<rect class="train-body train-line-${spec.line}" x="-20" y="-7" width="40" height="14" rx="3"/><path class="train-divider" d="M0-6V6"/><rect class="train-window" x="-14" y="-4" width="8" height="5" rx="1"/><rect class="train-window" x="6" y="-4" width="8" height="5" rx="1"/><circle class="train-wheel" cx="-12" cy="7" r="2"/><circle class="train-wheel" cx="12" cy="7" r="2"/>`;
+  group.innerHTML = [
+    `<path class="train-shell train-line-${spec.line}" d="M-20-6H15v2h5V6h-5v2h-35Z"/>`,
+    '<rect class="train-roof" x="-16" y="-7" width="27" height="2"/>',
+    '<rect class="train-window" x="-15" y="-4" width="7" height="5"/>',
+    '<rect class="train-window" x="-5" y="-4" width="7" height="5"/>',
+    '<rect class="train-window" x="5" y="-4" width="7" height="5"/>',
+    '<rect class="train-window-glint train-window-glint-a" x="-14" y="-3" width="2" height="3"/>',
+    '<rect class="train-window-glint train-window-glint-b" x="-4" y="-3" width="2" height="3"/>',
+    '<rect class="train-window-glint train-window-glint-a" x="6" y="-3" width="2" height="3"/>',
+    '<path class="train-door" d="M-1-5V7"/>',
+    '<rect class="train-light" x="16" y="-2" width="3" height="4"/>',
+    '<rect class="train-wheel" x="-14" y="7" width="5" height="2"/>',
+    '<rect class="train-wheel" x="7" y="7" width="5" height="2"/>'
+  ].join('');
   $('#trains').append(group);
   const points = spec.points.map(point => {
     const hasId = typeof point[0] === 'string';
@@ -368,17 +391,34 @@ function beginTrainSegment(train) {
   train.progress = 0;
   train.duration = Math.max(.75, Math.abs(train.endDistance - train.startDistance) / train.speed);
   train.phase = 'travel';
+  train.group.classList.add('moving');
 }
 
 const arrivalTimers = new Map();
+const activeArrivalIds = [];
+function clearArrival(id) {
+  document.querySelectorAll(`[data-stop="${stops.findIndex(stop => stop.id === id)}"]`).forEach(element => element.classList.remove('arriving'));
+  const queueIndex = activeArrivalIds.indexOf(id);
+  if (queueIndex >= 0) activeArrivalIds.splice(queueIndex, 1);
+}
+
 function triggerArrival(id) {
   if (!id) return;
   const index = stops.findIndex(stop => stop.id === id);
-  document.querySelectorAll(`[data-stop="${index}"]`).forEach(element => element.classList.add('arriving'));
   clearTimeout(arrivalTimers.get(id));
+  clearArrival(id);
+  activeArrivalIds.push(id);
+  while (activeArrivalIds.length > 2) {
+    const oldestId = activeArrivalIds.shift();
+    clearTimeout(arrivalTimers.get(oldestId));
+    arrivalTimers.delete(oldestId);
+    clearArrival(oldestId);
+  }
+  document.querySelectorAll(`[data-stop="${index}"]`).forEach(element => element.classList.add('arriving'));
   arrivalTimers.set(id, setTimeout(() => {
-    document.querySelectorAll(`[data-stop="${index}"]`).forEach(element => element.classList.remove('arriving'));
-  }, 1150));
+    clearArrival(id);
+    arrivalTimers.delete(id);
+  }, 1050));
   startWalker(id);
 }
 
@@ -397,6 +437,7 @@ function updateTrain(train, delta) {
     train.position = train.points[train.currentIndex].distance;
     train.phase = 'dwell';
     train.dwellRemaining = 850;
+    train.group.classList.remove('moving');
     triggerArrival(train.points[train.currentIndex].id);
   }
 }
@@ -405,7 +446,7 @@ function createWalker(stop) {
   const path = $(`#walk-${stop.id}`);
   const group = document.createElementNS(svgNS, 'g');
   group.classList.add('walker', `line-${stop.line}`);
-  group.innerHTML = '<use href="#person" x="-8" y="-29" width="16" height="31"/>';
+  group.innerHTML = '<use href="#person" x="-8" y="-29" width="16" height="30"/>';
   $('#walkers').append(group);
   const walker = {
     id: stop.id,
@@ -416,6 +457,7 @@ function createWalker(stop) {
     direction: 1,
     nextDirection: 1,
     speed: path.getTotalLength() / 2.25,
+    renderElapsed: 0,
     active: false
   };
   positionWalker(walker);
@@ -424,7 +466,7 @@ function createWalker(stop) {
 
 function positionWalker(walker) {
   const point = walker.path.getPointAtLength(walker.position);
-  walker.group.setAttribute('transform', `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)})`);
+  walker.group.setAttribute('transform', `translate(${Math.round(point.x)} ${Math.round(point.y)})`);
 }
 
 function startWalker(id) {
@@ -434,6 +476,7 @@ function startWalker(id) {
   walker.direction = walker.nextDirection;
   walker.nextDirection *= -1;
   walker.position = walker.direction > 0 ? 0 : walker.length;
+  walker.renderElapsed = 0;
   walker.active = true;
   walker.group.classList.add('active');
   positionWalker(walker);
@@ -442,6 +485,7 @@ function startWalker(id) {
 function updateWalker(walker, delta) {
   if (!walker.active) return;
   walker.position += walker.direction * walker.speed * delta;
+  walker.renderElapsed += delta;
   if (walker.position >= walker.length || walker.position <= 0) {
     walker.position = Math.max(0, Math.min(walker.length, walker.position));
     positionWalker(walker);
@@ -449,7 +493,10 @@ function updateWalker(walker, delta) {
     walker.group.classList.remove('active');
     return;
   }
-  positionWalker(walker);
+  if (walker.renderElapsed >= .115) {
+    walker.renderElapsed = 0;
+    positionWalker(walker);
+  }
 }
 
 function setLinkedStop(index, linked) {
@@ -465,6 +512,7 @@ translate();
 const trains = routeSpecs.map(createTrain);
 const walkers = stops.map(createWalker);
 trains.forEach(positionTrain);
+syncMotionPauseState();
 
 function animate(time) {
   const delta = lastFrame === null ? 0 : Math.min((time - lastFrame) / 1000, .05);
@@ -515,6 +563,7 @@ $('#language').addEventListener('click', () => {
 $('#close-story').addEventListener('click', () => $('#story').close());
 $('#story').addEventListener('close', () => {
   renderMapTargets();
+  syncMotionPauseState();
   $(`.feature-stop[data-stop="${activeStop}"]`)?.focus({preventScroll: true});
 });
 $('#story').addEventListener('click', event => {
@@ -522,7 +571,11 @@ $('#story').addEventListener('click', event => {
 });
 $('#previous').addEventListener('click', () => openStop(activeStop - 1));
 $('#next').addEventListener('click', () => openStop(activeStop + 1));
-document.addEventListener('visibilitychange', () => { lastFrame = null; });
+document.addEventListener('visibilitychange', () => {
+  lastFrame = null;
+  syncMotionPauseState();
+});
+prefersReducedMotion.addEventListener('change', syncMotionPauseState);
 
 window.addEventListener('load', () => {
   if (!window.matchMedia('(max-width: 760px)').matches) return;
