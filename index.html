@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Liam Hellman's bilingual industrial relations portfolio, mapped across Montréal.">
-  <meta name="theme-color" content="#16211d">
+  <meta name="description" content="Liam Hellman's bilingual industrial relations portfolio, mapped through Montréal's métro.">
+  <meta name="theme-color" content="#173b33">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>Liam Hellman — A Montréal network</title>
+  <title>Liam Hellman — Montréal connections</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#map" data-i18n="skip">Skip to the map</a>
+  <a class="skip-link" href="#map-viewport" data-i18n="skip">Skip to the map</a>
+
   <header class="topbar">
     <a class="identity" href="./" aria-label="Liam Hellman home">
       <span class="metro-mark" aria-hidden="true">M</span>
@@ -21,93 +22,107 @@
     <nav class="actions" aria-label="Main navigation">
       <a id="cv-link" href="assets/Liam-Hellman-CV-EN.pdf" target="_blank" rel="noopener"><span data-i18n="cv">Résumé</span><b aria-hidden="true">↗</b></a>
       <a href="mailto:liamhellman@gmail.com"><span data-i18n="contact">Contact</span><b aria-hidden="true">↗</b></a>
-      <button id="language" aria-label="Passer au français">FR</button>
+      <button id="language" type="button" aria-label="Passer au français">FR</button>
     </nav>
   </header>
 
   <main class="network">
-    <section class="map-frame" aria-labelledby="map-heading">
-      <div class="map-plaque">
-        <p data-i18n="eyebrow">RÉSEAU PERSONNEL · PERSONAL NETWORK</p>
-        <h1 id="map-heading"><span data-i18n="name">Liam Hellman</span><small data-i18n="mapTitle">People, work, and the routes between them.</small></h1>
-      </div>
+    <section class="map-shell" aria-labelledby="map-heading">
+      <header class="map-header">
+        <div class="map-title">
+          <span data-i18n="eyebrow">PERSONAL NETWORK · RÉSEAU PERSONNEL</span>
+          <h1 id="map-heading">Liam Hellman</h1>
+          <p data-i18n="mapTitle">People, work, and the routes between them.</p>
+        </div>
+        <div class="line-key" aria-label="Montréal métro lines">
+          <span><i class="key-blue"></i><b data-i18n="blueLine">Blue</b></span>
+          <span><i class="key-orange"></i><b data-i18n="orangeLine">Orange</b></span>
+          <span><i class="key-green"></i><b data-i18n="greenLine">Green</b></span>
+          <span><i class="key-yellow"></i><b data-i18n="yellowLine">Yellow</b></span>
+        </div>
+      </header>
+
       <div class="map-viewport" id="map-viewport" tabindex="0" role="region" aria-label="Interactive Montréal portfolio map; scroll horizontally on small screens">
-        <svg id="map" viewBox="0 0 1200 760" role="group" aria-labelledby="svg-title svg-desc">
+        <svg id="metro-map" viewBox="0 0 1200 700" role="group" aria-labelledby="svg-title svg-desc">
           <title id="svg-title">Liam Hellman’s Montréal network</title>
-          <desc id="svg-desc">An old Montréal metro inspired map with six interactive stations connected by the green, orange, blue, and yellow lines.</desc>
+          <desc id="svg-desc">A clean retro Montréal métro map with six interactive portfolio stations, real landmarks, moving trains, and purposeful pedestrian routes.</desc>
           <defs>
-            <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f3efdf"/><stop offset="1" stop-color="#ded6bf"/></linearGradient>
-            <linearGradient id="water" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b8d3cf"/><stop offset="1" stop-color="#8fb8b6"/></linearGradient>
-            <linearGradient id="node" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffef7"/><stop offset=".65" stop-color="#e8e1cc"/><stop offset="1" stop-color="#b9ae92"/></linearGradient>
-            <pattern id="paper-grain" width="34" height="34" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r=".7" fill="#685f4d" opacity=".08"/><circle cx="24" cy="18" r=".5" fill="#685f4d" opacity=".06"/></pattern>
-            <filter id="line-depth" x="-20%" y="-20%" width="150%" height="160%"><feDropShadow dx="0" dy="7" stdDeviation="2.5" flood-color="#433e33" flood-opacity=".34"/></filter>
-            <filter id="object-shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="5" flood-color="#323028" flood-opacity=".28"/></filter>
-            <symbol id="person" viewBox="0 0 18 35"><ellipse cx="9" cy="33" rx="7" ry="2" fill="#2c302b" opacity=".2"/><path d="M6 22l-1 9m7-9 1 9" stroke="#263b3c" stroke-width="3.4" stroke-linecap="round"/><path d="M5 13l-3 7m11-7 3 7" stroke="#b87c5e" stroke-width="2.8" stroke-linecap="round"/><rect x="4" y="10" width="10" height="14" rx="3" fill="currentColor"/><circle cx="9" cy="6" r="4.3" fill="#c99771"/><path d="M5 5q2-6 8-1" stroke="#3b322c" stroke-width="2.7" fill="none"/></symbol>
+            <symbol id="person" viewBox="0 0 16 31">
+              <circle cx="8" cy="5" r="4" class="person-skin"/>
+              <path d="M5 12h6v9H5Z" fill="currentColor"/>
+              <path d="M5 21 3 29M11 21l2 8M5 13l-4 7M11 13l4 7" class="person-limbs"/>
+            </symbol>
           </defs>
 
-          <rect width="1200" height="760" rx="8" fill="url(#paper)"/>
-          <rect width="1200" height="760" rx="8" fill="url(#paper-grain)"/>
-          <g id="geography" aria-hidden="true">
-            <path d="M0 588Q145 552 281 588T551 627T834 605T1200 555V760H0Z" fill="url(#water)"/>
-            <path d="M-10 614Q147 577 291 615T562 654T840 633T1210 583" fill="none" stroke="#e5eeee" stroke-width="3" stroke-dasharray="24 18" opacity=".78"/>
-            <path d="M92 442L167 194Q188 124 272 97L667 39Q785 23 886 93L1114 254Q1181 302 1129 381L1015 548Q985 592 917 592L306 596Q223 595 168 545Z" fill="#e7e0ca" stroke="#c9c0a8" stroke-width="2"/>
-            <path d="M108 444L180 206Q199 146 276 119L661 63Q770 48 862 110L1095 273Q1144 306 1108 362L1000 526Q974 566 910 566L314 571Q242 569 190 524Z" fill="#ece7d7"/>
-            <path d="M176 224q82-137 205-87 50 20 51 103-132 49-256-16Z" fill="#b6bea5" opacity=".72"/>
-            <path d="M207 211q59-89 135-55 35 16 42 70-92 37-177-15Z" fill="#9fac91" opacity=".75"/>
-            <text x="245" y="191" class="geo-label" data-i18n-svg="mountRoyal">MONT ROYAL</text>
-            <path d="M781 543q89-44 186 4l-32 80q-87 28-175-8Z" fill="#e3ddc8" stroke="#bfb69d"/>
-            <path d="M705 514l149 117M747 480l153 120" stroke="#aa9f85" stroke-width="4" opacity=".55"/>
-            <text x="1010" y="697" class="water-label">FLEUVE SAINT-LAURENT</text>
-            <text x="961" y="529" class="geo-label" data-i18n-svg="oldPort">VIEUX-MONTRÉAL</text>
+          <rect class="map-paper" width="1200" height="700"/>
+          <g class="geography" aria-hidden="true">
+            <path class="river" d="M0 583Q156 552 315 589T627 616T925 587T1200 548V700H0Z"/>
+            <path class="river-mark" d="M0 612Q157 579 318 616T629 643T928 614T1200 574"/>
+            <path class="island" d="M57 516 133 235Q150 173 225 136L716 70Q805 59 881 111L1100 275Q1145 309 1116 357L1016 517Q988 558 920 559L302 567Q207 568 145 542Z"/>
+            <path class="island-inner" d="M86 503 157 250Q174 195 239 164L713 99Q795 88 864 136L1070 290Q1103 314 1082 348L990 491Q968 527 910 529L311 537Q225 537 173 515Z"/>
+            <path class="river-island" d="M760 526Q818 494 889 517L928 577Q874 607 799 585Z"/>
+            <g class="mount-royal">
+              <path d="M140 246Q213 119 348 149 416 164 439 233 320 282 140 246Z"/>
+              <path d="M184 231Q239 157 326 172 371 180 389 218 296 250 184 231Z"/>
+              <text x="270" y="155" data-i18n-svg="mountRoyal">MONT ROYAL</text>
+            </g>
+            <g class="downtown-grid">
+              <path d="M338 409 579 637M382 376 624 606M425 344 669 574M466 314 713 543"/>
+              <path d="M310 516 597 319M348 559 640 356M402 589 682 398"/>
+            </g>
+            <text class="district-label" x="500" y="675" data-i18n-svg="oldMontreal">OLD MONTRÉAL</text>
+            <text class="river-label" x="820" y="680">FLEUVE SAINT-LAURENT</text>
           </g>
 
-          <g class="city-blocks" aria-hidden="true" filter="url(#object-shadow)">
-            <g transform="translate(410 476)"><path d="M0 18 36 0l36 18-36 18Z" fill="#d6ccb4"/><path d="M0 18v41l36 18V36Z" fill="#aa9b7e"/><path d="M36 36l36-18v41L36 77Z" fill="#7f8f7e"/></g>
-            <g transform="translate(453 446)"><path d="M0 22 44 0l44 22-44 22Z" fill="#c6b99c"/><path d="M0 22v58l44 22V44Z" fill="#9c8c72"/><path d="M44 44l44-22v58l-44 22Z" fill="#60776d"/></g>
-            <g transform="translate(505 489)"><path d="M0 17 33 0l33 17-33 17Z" fill="#d8caa9"/><path d="M0 17v43l33 17V34Z" fill="#b59c76"/><path d="M33 34l33-17v43L33 77Z" fill="#7d8c7e"/></g>
-            <g transform="translate(900 465)"><path d="M0 20 40 0l40 20-40 20Z" fill="#d8cdb4"/><path d="M0 20v49l40 20V40Z" fill="#9d8e73"/><path d="M40 40l40-20v49l-40 20Z" fill="#70867a"/></g>
+          <g class="route-casings" aria-hidden="true">
+            <path d="M180 260H260L360 215 520 170H730"/>
+            <path d="M520 170 548 215 580 275 610 340 650 430 605 480 535 530 450 565"/>
+            <path d="M190 540 360 530 500 500 575 465 650 430H790L960 430"/>
+            <path d="M650 430 735 500 830 570 1020 640"/>
+          </g>
+          <g class="routes" aria-hidden="true">
+            <path id="blue-route" class="route-blue" d="M180 260H260L360 215 520 170H730"/>
+            <path id="orange-route" class="route-orange" d="M520 170 548 215 580 275 610 340 650 430 605 480 535 530 450 565"/>
+            <path id="green-route" class="route-green" d="M190 540 360 530 500 500 575 465 650 430H790L960 430"/>
+            <path id="yellow-route" class="route-yellow" d="M650 430 735 500 830 570 1020 640"/>
           </g>
 
-          <g class="route-shadows" fill="none" stroke="#fff9e8" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M590 105C620 173 626 253 645 330S678 423 680 480C665 551 600 609 535 660"/>
-            <path d="M205 260C330 241 480 197 590 105C674 74 772 96 845 150"/>
-            <path d="M295 650C411 625 535 589 680 480C768 431 866 414 1010 430"/>
-            <path d="M680 480C753 520 822 565 900 640"/>
-          </g>
-          <g class="routes" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" filter="url(#line-depth)">
-            <path id="orange-route" d="M590 105C620 173 626 253 645 330S678 423 680 480C665 551 600 609 535 660" stroke="#e86f32"/>
-            <path id="blue-route" d="M205 260C330 241 480 197 590 105C674 74 772 96 845 150" stroke="#1677a8"/>
-            <path id="green-route" d="M295 650C411 625 535 589 680 480C768 431 866 414 1010 430" stroke="#11815a"/>
-            <path id="yellow-route" d="M680 480C753 520 822 565 900 640" stroke="#e4bf22"/>
-          </g>
-
-          <g id="minor-stations" aria-hidden="true"></g>
           <g id="trains" aria-hidden="true"></g>
-          <g id="station-scenes" aria-hidden="true"></g>
-          <g id="walkers" aria-hidden="true"></g>
-          <g id="stations"></g>
+          <g id="minor-stations" aria-hidden="true"></g>
 
-          <g class="map-key" aria-hidden="true" transform="translate(54 674)">
-            <rect width="332" height="48" rx="4" fill="#f8f3e3" stroke="#bdb39b"/>
-            <circle cx="25" cy="24" r="10" fill="#20342d"/><text x="25" y="28" text-anchor="middle" class="key-m">M</text>
-            <text x="46" y="20" class="key-main">MÉTRO DE MONTRÉAL</text><text x="46" y="34" class="key-sub">CARTE PERSONNELLE · PERSONAL MAP</text>
-            <path d="M248 13h67M248 24h67M248 35h67" stroke-width="4"/><path d="M248 13h16" stroke="#11815a" stroke-width="4"/><path d="M265 13h16" stroke="#e86f32" stroke-width="4"/><path d="M282 13h16" stroke="#1677a8" stroke-width="4"/><path d="M299 13h16" stroke="#e4bf22" stroke-width="4"/>
+          <g id="access-links" aria-hidden="true">
+            <path id="walk-udem" class="access-path access-blue" d="M260 260 224 225 194 207"/>
+            <path id="walk-rosemont" class="access-path access-orange" d="M580 275 675 248 783 226"/>
+            <path id="walk-berri" class="access-path access-green" d="M650 430 640 370 700 352"/>
+            <path id="walk-pda" class="access-path access-green" d="M500 500 500 438 448 409"/>
+            <path id="walk-square" class="access-path access-orange" d="M450 565 397 606 355 625"/>
+            <path id="walk-drapeau" class="access-path access-yellow" d="M830 570 905 535 990 515"/>
           </g>
-          <g class="north" aria-hidden="true" transform="translate(1125 85)"><path d="M0 47V0m-8 13 8-13 8 13" fill="none" stroke="#4f554b" stroke-width="2"/><text x="0" y="-9" text-anchor="middle">N</text></g>
+
+          <g id="walkers" aria-hidden="true"></g>
+          <g id="landmarks"></g>
+          <g id="feature-stations"></g>
+
+          <g class="north" aria-hidden="true" transform="translate(1110 110)">
+            <text x="0" y="-15" text-anchor="middle">N</text>
+            <path d="M0 43V0m-8 13L0 0l8 13"/>
+          </g>
         </svg>
       </div>
-      <div class="map-caption">
-        <span><i></i><span data-i18n="hint">Select a raised station to explore.</span></span>
-        <span data-i18n="caption">Inspired by Montréal’s original métro diagrams · Map not to scale</span>
-      </div>
+
+      <footer class="map-footer">
+        <span><i aria-hidden="true"></i><span data-i18n="hint">Choose a featured station or landmark.</span></span>
+        <span data-i18n="caption">A personal diagram inspired by Montréal · Not to scale</span>
+      </footer>
     </section>
   </main>
 
   <dialog id="story" aria-labelledby="story-title">
-    <div class="story-head"><span id="story-line"></span><button id="close-story" aria-label="Close">×</button></div>
+    <div class="story-head"><span id="story-line"></span><button id="close-story" type="button" aria-label="Close">×</button></div>
     <div id="story-content"></div>
-    <div class="story-nav"><button id="previous" data-i18n="previous">← Previous</button><button id="next" data-i18n="next">Next station →</button></div>
+    <div class="story-nav"><button id="previous" type="button" data-i18n="previous">← Previous</button><button id="next" type="button" data-i18n="next">Next station →</button></div>
   </dialog>
+
   <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
   <noscript><div class="noscript">Liam Hellman — Industrial relations student at Université de Montréal. <a href="assets/Liam-Hellman-CV-EN.pdf">English résumé</a> · <a href="assets/Liam-Hellman-CV-FR.pdf">CV français</a>.</div></noscript>
 </body>

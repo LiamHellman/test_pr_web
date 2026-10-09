@@ -1,11 +1,13 @@
 # Liam Hellman — A personal network
 
-A bilingual personal portfolio centered on industrial relations, presented as a raised, illustrated network map inspired by Montréal's early métro diagrams. Built with dependency-free HTML, CSS, JavaScript, and SVG.
+A bilingual personal portfolio centered on industrial relations, presented as a crisp 2D network map inspired by Montréal's early métro diagrams. Built with dependency-free HTML, CSS, JavaScript, and SVG.
 
 ## Explore
 
-- Six meaningful Montréal stations: introduction, education, experience, industrial relations, projects, and personal interests.
-- Four animated métro trains, small street scenes, and walking characters layered behind the interactive stops.
+- Six meaningful stops on a geographically coherent Montréal network: introduction, education, experience, industrial relations, projects, and personal interests.
+- Six linked city landmarks, including Roger-Gaudry pavilion, Bar Rosemont, the Berri and Guimard entrances, Place des Arts, and the Montréal Biosphere.
+- Four line-aware métro trains that follow the tracks, ease between stops, and dwell at stations.
+- Pedestrians who move only between featured stations and their paired landmarks after a train arrives.
 - A restrained interface with only résumé, contact, and language controls.
 - English/French content and downloadable résumés.
 - Keyboard-operable stations, native modal focus management, and automatic reduced-motion support.
@@ -29,7 +31,7 @@ All asset references are relative, so the site works at either a repository subp
 
 ## Edit
 
-- `app.js`: bilingual copy, station coordinates, illustrations, and train behavior.
+- `app.js`: bilingual copy, station and landmark data, and synchronized train and pedestrian behavior.
 - `style.css`: layout, colours, responsive styles, and reduced-motion behavior.
 - `index.html`: page structure, metadata, and content security policy.
 - `assets/`: original supplied English/French résumé PDFs and favicon.
