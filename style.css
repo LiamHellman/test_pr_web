@@ -4,13 +4,15 @@
 @media(max-width:760px){.header{height:80px;margin:0 20px}.brand{gap:12px;font-size:14px}.monogram{font-size:32px}.brand-sub{font-size:8px}.header-links{gap:15px;font-size:10px}.header-links a:nth-child(2){display:none}.language{width:32px;height:32px}.world{padding:0;display:block}.intro{padding:34px 24px 30px;position:relative}.eyebrow{font-size:8px}h1{font-size:49px;line-height:1.02;letter-spacing:-2.8px;margin:20px 0 17px}h1 em{letter-spacing:-2px}.intro-copy{max-width:480px;font-size:13px;line-height:1.75;margin-bottom:20px}.tour-button{padding:14px 18px}.hint{margin:11px 0 0;font-size:10px}.ticket{display:none}.map-panel{border-left:0;border-top:1px solid var(--line);padding-top:18px}.map-top{padding:0 18px}.map-caption{font-size:8px}.map-tools button{padding:7px 9px;font-size:9px}#city{min-width:780px;width:780px}.map-scroll{max-height:505px}.map-bottom{padding:14px 20px;flex-direction:row}.legend{gap:12px;font-size:8px}.explore-hint{display:none}footer{margin:0 20px;flex-wrap:wrap;gap:15px;font-size:9px}footer>span:nth-child(2){order:3;width:100%}dialog{padding:23px;max-width:100%;width:100%;height:90dvh;max-height:90dvh;margin:auto 0 0;border-radius:15px 15px 0 0}.story-title{font-size:38px}.story-number{font-size:60px;margin:22px 0 15px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
-/* Pixel motion layer: the original city stays illustrated while movement uses
-   a restrained stepped cadence inspired by the supplied GIFs. */
+/* Unified scene system: crisp sprite characters and a shared architectural kit
+   keep the illustrated city coherent at both map scale and close zoom. */
 #city { overflow: hidden; }
 #animation-layer { pointer-events: none; }
 .pixel-train,
 .pixel-train-car,
 .pixel-walker,
+.scene-person,
+.scene-person-frame,
 .pixel-ball,
 .pixel-smoke,
 .station-pixel-pulse { shape-rendering: crispEdges; }
@@ -32,6 +34,137 @@
 .person-shoe { fill: #443c35; }
 .person-skin { fill: #d6a47e; }
 .person-pants { fill: #344956; }
+.person-feature { fill: #4d3f36; }
+.person-shirt-detail { fill: #fff7df; opacity: .24; }
+
+/* Every stationary figure uses the same two-frame sprite as the walkers. */
+.scene-person-frame-a { animation: scene-person-a 1.8s steps(1, end) infinite; }
+.scene-person-frame-b {
+  opacity: 0;
+  animation: scene-person-b 1.8s steps(1, end) infinite;
+}
+.person-phase-1 .scene-person-frame { animation-delay: -.42s; }
+.person-phase-2 .scene-person-frame { animation-delay: -.86s; }
+.person-phase-3 .scene-person-frame { animation-delay: -1.28s; }
+
+/* Shared building construction and details. */
+.building { shape-rendering: geometricPrecision; }
+.building-shadow { fill: #17271f; opacity: .16; }
+.building-front,
+.building-roof,
+.building-side {
+  stroke: #6f7563;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+.building-side { fill: #93937d; }
+.masonry {
+  fill: none;
+  stroke: #fff8e8;
+  stroke-width: .7;
+  opacity: .2;
+}
+.cornice {
+  fill: none;
+  stroke: #fff6df;
+  stroke-width: 2.5;
+  opacity: .48;
+}
+.downspout {
+  fill: none;
+  stroke: #667466;
+  stroke-width: 1.5;
+}
+.window-frame { fill: #8b725d; }
+.window-mullion {
+  fill: none;
+  stroke: #839b8a;
+  stroke-width: .8;
+  opacity: .8;
+}
+.window-sill {
+  fill: none;
+  stroke: #725d4f;
+  stroke-width: 1.5;
+}
+.door-frame { fill: #344f43; }
+.door-panel { fill: #263f35; }
+.door-handle { fill: #edcc83; }
+.door-step {
+  fill: none;
+  stroke: #a9a995;
+  stroke-width: 2;
+}
+.building-sign rect { fill: #405c4d; }
+.building-name { dominant-baseline: auto; }
+.solar-panel { fill: #668a8d; stroke: #3e625f; stroke-width: 1; }
+.solar-grid { fill: none; stroke: #bad5c7; stroke-width: .8; }
+.roof-vent { fill: #7b887d; stroke: #5d695f; stroke-width: 1; }
+.roof-vent-cap { stroke: #d7ddca; stroke-width: 2; }
+.utility-line { fill: none; stroke: #667466; stroke-width: 1.3; }
+.pediment { stroke: #7d806d; stroke-width: 1.2; }
+.pediment-trim,
+.building-steps {
+  fill: none;
+  stroke: #f3ead2;
+  stroke-width: 2;
+}
+.clock-face { fill: #f4efd9; stroke: #8e9380; stroke-width: 1.2; }
+.clock-hands { fill: none; stroke: #53675b; stroke-width: 1.3; }
+.roof-planter,
+.planter { fill: #9c7459; stroke: #6d5b4b; stroke-width: 1; }
+.roof-greenery,
+.planter-leaves { fill: none; stroke: #71906e; stroke-width: 3; }
+.notice-board { fill: #5c7566; stroke: #41594c; stroke-width: 1; }
+.notice-paper { fill: none; stroke: #eee7cf; stroke-width: 1; }
+.entry-canopy { fill: #e6d6b9; stroke: #8b7a66; stroke-width: 1; }
+.chimney { fill: #9f7e69; stroke: #705f53; stroke-width: 1; }
+.chimney-cap { fill: none; stroke: #d9c4a8; stroke-width: 3; }
+.storefront-frame { fill: #52685a; }
+.storefront-mullion { stroke: #587365; stroke-width: 1.2; }
+.awning { fill: #efe2c4; stroke: #8b7a66; stroke-width: 1; }
+.awning-stripes { fill: none; stroke: #bd604b; stroke-width: 6; }
+.floor-band { fill: none; stroke: #e8e3cf; stroke-width: 1.5; opacity: .55; }
+.fire-escape { fill: none; stroke: #586e62; stroke-width: 1.4; }
+.address-plaque { fill: #d9d4bc; stroke: #6c7568; stroke-width: .8; }
+.address-number { fill: #42574b; font: 5px Arial, sans-serif; }
+
+/* Scene furniture uses the same restrained outline language. */
+.basketball-court > rect:nth-child(2),
+.basketball-court > path,
+.basketball-court > circle {
+  fill: none;
+  stroke: #f7efdc;
+  stroke-width: 1.5;
+}
+.ball-shadow { fill: #4a5649; opacity: .2; animation: ball-shadow 1.2s steps(4, end) infinite; transform-box: fill-box; transform-origin: center; }
+.basketball-ball rect { fill: #bc6c43; stroke: #7d4938; stroke-width: 1; }
+.basketball-ball path { fill: none; stroke: #6d4033; stroke-width: 1; }
+.park-bench path,
+.maker-bench path,
+.bike-rack path,
+.cafe-patio path {
+  fill: none;
+  stroke: #7d715c;
+  stroke-width: 2.5;
+}
+.maker-bench rect { fill: #50685a; stroke: #364e42; stroke-width: 1; }
+.maker-bench path:nth-of-type(2) { stroke: #b8d4c3; stroke-width: 1; }
+.community-table ellipse { fill: #eee1c2; stroke: #8e755e; stroke-width: 1; }
+.community-table path { fill: none; stroke: #796750; stroke-width: 2; }
+.community-table circle { fill: #9b7358; }
+.notice-stand rect { fill: #587164; stroke: #3d574a; stroke-width: 1; }
+.notice-stand path { fill: none; stroke: #efe7cf; stroke-width: 1; }
+.cafe-patio ellipse { fill: #9b7358; stroke: #715a48; stroke-width: 1; }
+.metro-sign > path:first-child { stroke: #486556; stroke-width: 3; }
+.metro-sign rect { fill: #486556; stroke: #d7ddca; stroke-width: 1; }
+.metro-sign > path:last-child { fill: none; stroke: #fff4dc; stroke-width: 2; }
+.newspaper-box rect { fill: #668295; stroke: #405b69; stroke-width: 1; }
+.newspaper-box path { fill: none; stroke: #eef2df; stroke-width: 1; }
+.bridge path:first-child { fill: #d4d3c0; }
+.bridge path:last-child { fill: none; stroke: #9daa96; stroke-width: 2; }
+.sailboat path:first-child { fill: #bf7758; }
+.sailboat path:last-child { fill: #f8f4e4; stroke: #839b8a; stroke-width: 1; }
 .label-bg {
   fill: var(--white);
   opacity: 1;
@@ -49,13 +182,23 @@
 .pixel-smoke rect:nth-child(2) { opacity: .72; }
 .pixel-smoke rect:nth-child(3) { opacity: .42; }
 .pixel-ball {
-  animation: pixel-bounce 2.4s steps(6, end) infinite;
+  animation: pixel-bounce 1.2s steps(4, end) infinite;
   transform-box: fill-box;
   transform-origin: center;
 }
 .motion-paused .station-pixel-pulse,
 .motion-paused .pixel-smoke,
-.motion-paused .pixel-ball { animation-play-state: paused; }
+.motion-paused .pixel-ball,
+.motion-paused .ball-shadow,
+.motion-paused .scene-person-frame { animation-play-state: paused; }
+@keyframes scene-person-a {
+  0%, 72% { opacity: 1; }
+  73%, 100% { opacity: 0; }
+}
+@keyframes scene-person-b {
+  0%, 72% { opacity: 0; }
+  73%, 100% { opacity: 1; }
+}
 @keyframes pixel-stop {
   0%, 100% { opacity: .2; }
   50% { opacity: 1; }
@@ -67,5 +210,9 @@
 }
 @keyframes pixel-bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-16px); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes ball-shadow {
+  0%, 100% { opacity: .24; transform: scaleX(1); }
+  50% { opacity: .1; transform: scaleX(.6); }
 }

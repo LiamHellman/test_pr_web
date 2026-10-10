@@ -38,17 +38,17 @@
             <title id="city-title">Liam’s Montréal</title><desc id="city-desc">An illustrated city with six interactive metro stations, moving trains, and people. Select any station to explore its story.</desc>
             <defs>
               <pattern id="grid" width="35" height="35" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#aab6a2" opacity=".28"/></pattern>
-              <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="6" flood-color="#3b5645" flood-opacity=".12"/></filter>
+              <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="4" stdDeviation="2.5" flood-color="#18271f" flood-opacity=".18"/></filter>
               <clipPath id="map-safe-clip"><rect width="1100" height="710"/></clipPath>
               <mask id="animation-occlusion-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1100" height="710">
                 <rect width="1100" height="710" fill="#fff"/>
                 <g fill="#000">
-                  <rect class="scene-occlusion-zone text-safe-zone" x="486" y="0" width="116" height="84" rx="4"/>
+                  <rect class="scene-occlusion-zone text-safe-zone" x="486" y="0" width="154" height="84" rx="4"/>
                   <rect class="scene-occlusion-zone text-safe-zone" x="770" y="62" width="165" height="117" rx="4"/>
                   <rect class="scene-occlusion-zone text-safe-zone" x="283" y="171" width="149" height="114" rx="4"/>
                   <rect class="scene-occlusion-zone text-safe-zone" x="553" y="251" width="116" height="123" rx="4"/>
                   <rect class="scene-occlusion-zone text-safe-zone" x="728" y="223" width="108" height="150" rx="4"/>
-                  <rect class="scene-occlusion-zone text-safe-zone" x="160" y="360" width="98" height="80" rx="4"/>
+                  <rect class="scene-occlusion-zone text-safe-zone" x="164" y="360" width="100" height="82" rx="4"/>
                   <rect class="text-safe-zone" x="74" y="66" width="190" height="22" rx="3"/>
                   <rect class="text-safe-zone" x="62" y="638" width="210" height="34" rx="3"/>
                   <rect class="text-safe-zone" x="990" y="35" width="34" height="40" rx="3"/>
@@ -56,9 +56,8 @@
                 </g>
               </mask>
               <symbol id="tree" viewBox="0 0 45 65"><ellipse cx="23" cy="57" rx="19" ry="7" fill="#46694d" opacity=".12"/><path d="M23 25v32" stroke="#7a6951" stroke-width="5"/><path d="M23 40L13 29m10 6 10-14" stroke="#7a6951" stroke-width="3"/><ellipse cx="23" cy="22" rx="21" ry="23" fill="#85a680"/><ellipse cx="17" cy="16" rx="13" ry="17" fill="#a8be94"/></symbol>
-              <symbol id="person" viewBox="0 0 18 34"><ellipse cx="9" cy="31" rx="8" ry="3" fill="#263e31" opacity=".15"/><path d="M6 21l-1 9m7-9 1 9" stroke="#344956" stroke-width="3.5" stroke-linecap="round"/><path d="M5 12l-3 8m11-8 3 8" stroke="#c98b6a" stroke-width="3" stroke-linecap="round"/><rect x="4" y="9" width="10" height="14" rx="4" fill="currentColor"/><circle cx="9" cy="5" r="4.5" fill="#d6a47e"/><path d="M5 4q2-7 8-1" stroke="#443c35" stroke-width="3" fill="none"/></symbol>
-              <symbol id="pixel-person-a" viewBox="0 0 18 34"><rect x="3" y="31" width="12" height="2" class="person-shadow"/><rect x="6" y="1" width="7" height="3" class="person-hair"/><rect x="5" y="4" width="9" height="7" class="person-skin"/><rect x="5" y="11" width="9" height="12" fill="currentColor"/><rect x="2" y="12" width="3" height="9" class="person-skin"/><rect x="14" y="13" width="3" height="9" class="person-skin"/><rect x="5" y="23" width="4" height="8" class="person-pants"/><rect x="10" y="23" width="4" height="6" class="person-pants"/><rect x="3" y="29" width="6" height="2" class="person-shoe"/><rect x="10" y="28" width="6" height="2" class="person-shoe"/></symbol>
-              <symbol id="pixel-person-b" viewBox="0 0 18 34"><rect x="3" y="31" width="12" height="2" class="person-shadow"/><rect x="6" y="1" width="7" height="3" class="person-hair"/><rect x="5" y="4" width="9" height="7" class="person-skin"/><rect x="5" y="11" width="9" height="12" fill="currentColor"/><rect x="1" y="13" width="4" height="9" class="person-skin"/><rect x="14" y="12" width="3" height="9" class="person-skin"/><rect x="4" y="23" width="4" height="6" class="person-pants"/><rect x="10" y="23" width="4" height="8" class="person-pants"/><rect x="2" y="28" width="6" height="2" class="person-shoe"/><rect x="10" y="29" width="6" height="2" class="person-shoe"/></symbol>
+              <symbol id="pixel-person-a" viewBox="0 0 18 34"><rect x="3" y="31" width="12" height="2" class="person-shadow"/><rect x="6" y="1" width="7" height="3" class="person-hair"/><rect x="5" y="4" width="9" height="7" class="person-skin"/><rect x="12" y="6" width="1" height="1" class="person-feature"/><rect x="8" y="10" width="3" height="2" class="person-skin"/><rect x="5" y="12" width="9" height="11" fill="currentColor"/><rect x="6" y="13" width="2" height="7" class="person-shirt-detail"/><rect x="2" y="12" width="3" height="9" class="person-skin"/><rect x="14" y="13" width="3" height="9" class="person-skin"/><rect x="5" y="23" width="4" height="8" class="person-pants"/><rect x="10" y="23" width="4" height="6" class="person-pants"/><rect x="3" y="29" width="6" height="2" class="person-shoe"/><rect x="10" y="28" width="6" height="2" class="person-shoe"/></symbol>
+              <symbol id="pixel-person-b" viewBox="0 0 18 34"><rect x="3" y="31" width="12" height="2" class="person-shadow"/><rect x="6" y="1" width="7" height="3" class="person-hair"/><rect x="5" y="4" width="9" height="7" class="person-skin"/><rect x="12" y="6" width="1" height="1" class="person-feature"/><rect x="8" y="10" width="3" height="2" class="person-skin"/><rect x="5" y="12" width="9" height="11" fill="currentColor"/><rect x="6" y="13" width="2" height="7" class="person-shirt-detail"/><rect x="1" y="13" width="4" height="9" class="person-skin"/><rect x="14" y="12" width="3" height="9" class="person-skin"/><rect x="4" y="23" width="4" height="6" class="person-pants"/><rect x="10" y="23" width="4" height="8" class="person-pants"/><rect x="2" y="28" width="6" height="2" class="person-shoe"/><rect x="10" y="29" width="6" height="2" class="person-shoe"/></symbol>
             </defs>
             <rect width="1100" height="710" fill="url(#grid)"/>
             <g id="terrain">

@@ -25,31 +25,68 @@ const stops = [
 ];
 
 function escapeText(value) { return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
-function windows(width, floors, color) {
+function windows(width,height,floors) {
+  if(!floors) return '';
+  const columns=Math.max(2,Math.floor(width/24));
+  const endX=width-29;
+  const columnStep=columns===1?0:(endX-10)/(columns-1);
+  const lastRow=Math.max(12,height-50);
+  const rowStep=floors===1?0:(lastRow-12)/(floors-1);
   let result='';
-  for(let row=0;row<floors;row++) for(let col=0;col<Math.floor(width/23);col++) {
-    const x=10+col*23, y=12+row*28;
-    result+=`<rect x="${x}" y="${y}" width="13" height="18" rx="1" fill="${color}"/><rect class="window" x="${x+2}" y="${y+2}" width="9" height="13"/><path d="M${x} ${y+19}h14" stroke="#795d4b" stroke-width="2"/>`;
+  for(let row=0;row<floors;row++) for(let column=0;column<columns;column++) {
+    const x=Number((10+column*columnStep).toFixed(1));
+    const y=Number((12+row*rowStep).toFixed(1));
+    result+=`<g class="building-window"><rect class="window-frame" x="${x}" y="${y}" width="14" height="18" rx="1"/><rect class="window" x="${x+2}" y="${y+2}" width="10" height="13"/><path class="window-mullion" d="M${x+7} ${y+2}v13M${x+2} ${y+8.5}h10"/><path class="window-sill" d="M${x-1} ${y+19}h16"/></g>`;
   }
   return result;
 }
-function building(x,y,width,height,color,roof,name,floors=2) {
-  return `<g transform="translate(${x} ${y})" filter="url(#shadow)"><path d="M0 0l23-16h${width}l-23 16Z" fill="${roof}"/><path d="M${width} 0l23-16v${height}l-23 16Z" fill="#9b9983"/><rect width="${width}" height="${height}" fill="${color}"/><path d="M0 6h${width}M0 ${height-5}h${width}" stroke="#fff6e0" opacity=".35" stroke-width="3"/>${windows(width,floors,'#bda48a')}<rect x="${width-28}" y="${height-27}" width="18" height="27" fill="#40564b"/><rect x="${width-25}" y="${height-24}" width="12" height="15" class="window"/><rect x="7" y="${height-27}" width="${Math.max(28,width-40)}" height="12" rx="1" fill="#445f50"/><text x="12" y="${height-18}" class="building-name">${name}</text></g>`;
+function masonry(width,height) {
+  let result='';
+  for(let y=9,row=0;y<height-6;y+=14,row++) {
+    result+=`<path d="M3 ${y}H${width-3}"/>`;
+    for(let x=row%2?15:27;x<width-8;x+=28) result+=`<path d="M${x} ${y-4}v4"/>`;
+  }
+  return result;
+}
+function buildingDetail(kind,width,height,roof) {
+  if(kind==='atelier') return `<g class="rooftop-detail"><path class="solar-panel" d="M13-5l28-9h25l-28 9Z"/><path class="solar-grid" d="M24-9l25-8M34-12v7M48-16v7"/><rect class="roof-vent" x="${width-14}" y="-22" width="7" height="12"/><path class="roof-vent-cap" d="M${width-17}-22h13"/></g><path class="utility-line" d="M${width-7} 21v27m-4-13h8"/>`;
+  if(kind==='university') return `<g class="university-detail"><path class="pediment" d="M24 6L${width/2}-17L${width-24} 6Z" fill="${roof}"/><path class="pediment-trim" d="M20 7h${width-40}M31 10v42m23-42v42m24-42v42m23-42v42"/><circle class="clock-face" cx="${width/2}" cy="-1" r="8"/><path class="clock-hands" d="M${width/2}-6v6l4 2"/><path class="building-steps" d="M18 ${height+2}h${width-28}M13 ${height+7}h${width-18}M8 ${height+12}h${width-8}"/></g>`;
+  if(kind==='collective') return `<g class="collective-detail"><rect class="roof-planter" x="13" y="-10" width="30" height="8"/><path class="roof-greenery" d="M17-10q4-10 8 0q5-13 10 0q4-8 6 0"/><rect class="notice-board" x="9" y="${height-48}" width="28" height="17"/><path class="notice-paper" d="M13 ${height-44}h8v8h-8Zm11 0h9v4h-9Zm0 7h7"/><path class="entry-canopy" d="M${width-34} ${height-34}h29l5 6h-39Z"/></g>`;
+  if(kind==='cafe') return `<g class="cafe-detail"><path class="chimney" d="M49-7v-22h12v22"/><path class="chimney-cap" d="M46-29h18"/><rect class="storefront-frame" x="8" y="${height-39}" width="${width-40}" height="31"/><rect class="window storefront-window" x="11" y="${height-36}" width="${width-46}" height="25"/><path class="storefront-mullion" d="M${(width-19)/2} ${height-36}v25"/><path class="awning" d="M4 ${height-43}h${width-8}l7 11H-3Z"/><path class="awning-stripes" d="M15 ${height-43}l-2 11m17-11v11m16-11l2 11m14-11l5 11"/></g>`;
+  if(kind==='office') return `<g class="office-detail"><path class="floor-band" d="M4 37h${width-8}M4 66h${width-8}M4 94h${width-8}"/><g class="fire-escape"><path d="M${width-3} 25h20v72h-20m0-48h20m-20 24h20m-15-48v72m10-72v72M${width+1} 49l12 24m0-24L${width+1} 73"/><path d="M${width-6} 25h26m-26 24h26m-26 24h26"/></g><rect class="address-plaque" x="${width+2}" y="14" width="11" height="8"/><text class="address-number" x="${width+7.5}" y="20" text-anchor="middle">514</text></g>`;
+  if(kind==='shop') return `<g class="shop-detail"><rect class="storefront-frame" x="8" y="21" width="${width-36}" height="${height-27}"/><rect class="window storefront-window" x="11" y="24" width="${width-42}" height="${height-33}"/><path class="storefront-mullion" d="M${(width-20)/2} 24v${height-33}"/><path class="awning" d="M3 17h${width-6}l7 10H-4Z"/><path class="awning-stripes" d="M14 17l-2 10m17-10v10m16-10l3 10m13-10l5 10"/><rect class="planter" x="4" y="${height-7}" width="12" height="6"/><path class="planter-leaves" d="M7 ${height-7}q1-10 4 0q4-8 4 0"/></g>`;
+  return '';
+}
+function building(x,y,width,height,color,roof,name,floors=2,kind='standard') {
+  const depth=16;
+  const signY=kind==='shop'?4:kind==='cafe'?height-55:height-27;
+  const signWidth=kind==='shop'?width-16:Math.max(30,width-40);
+  return `<g class="building building--${kind}" transform="translate(${x} ${y})" filter="url(#shadow)"><ellipse class="building-shadow" cx="${(width+depth)/2}" cy="${height+5}" rx="${(width+26)/2}" ry="6"/><path class="building-side" d="M${width} 0l${depth}-12v${height}l-${depth} 12Z"/><path class="building-roof" d="M0 0l${depth}-12h${width}l-${depth} 12Z" fill="${roof}"/><rect class="building-front" width="${width}" height="${height}" fill="${color}"/><g class="masonry">${masonry(width,height)}</g>${windows(width,height,floors)}<path class="cornice" d="M1 5h${width-2}M1 ${height-5}h${width-2}"/><path class="downspout" d="M4 8v${height-13}h5"/><g class="building-entry"><rect class="door-frame" x="${width-27}" y="${height-29}" width="20" height="29"/><rect class="window door-glass" x="${width-24}" y="${height-25}" width="14" height="17"/><rect class="door-panel" x="${width-24}" y="${height-6}" width="14" height="4"/><rect class="door-handle" x="${width-12}" y="${height-14}" width="2" height="2"/><path class="door-step" d="M${width-30} ${height+2}h26"/></g><g class="building-sign"><rect x="7" y="${signY}" width="${signWidth}" height="12" rx="1"/><text x="12" y="${signY+9}" class="building-name">${escapeText(name)}</text></g>${buildingDetail(kind,width,height,roof)}</g>`;
 }
 function tree(x,y,scale=1) {return `<use href="#tree" x="${x}" y="${y}" width="${45*scale}" height="${65*scale}"/>`;}
-function person(x,y,color='#c8664d',scale=1) {return `<use href="#person" x="${x}" y="${y}" width="${18*scale}" height="${34*scale}" color="${color}"/>`;}
+function scenePerson(x,y,color='#c8664d',scale=1) {
+  const phase=Math.abs(Math.round(x+y))%4;
+  return `<g class="scene-person person-phase-${phase}" transform="translate(${x} ${y}) scale(${scale})" color="${color}"><use class="scene-person-frame scene-person-frame-a" href="#pixel-person-a" width="18" height="34"/><use class="scene-person-frame scene-person-frame-b" href="#pixel-person-b" width="18" height="34"/></g>`;
+}
 function pixelPerson(x,y,color='#c8664d',scale=1,frame='a') {return `<use href="#pixel-person-${frame}" x="${x}" y="${y}" width="${18*scale}" height="${34*scale}" color="${color}"/>`;}
 function scene(index,markup) {return `<g class="scene-hotspot" role="button" tabindex="0" data-stop="${index}" aria-label="${escapeText(stops[index][language].name)}">${markup}</g>`;}
 
+const basketballPlayers=[
+  {x:38,y:16,scale:.72,color:'#608bab'},
+  {x:82,y:31,scale:.72,color:'#c8664d'}
+];
+const basketballBall={x:62,y:43,size:7,rise:14};
+
 function drawScenery() {
-  $('#scenery').innerHTML =
-    scene(5,`<ellipse class="scene-ground" cx="201" cy="116" rx="113" ry="53" fill="#d4dfc5"/>${tree(83,42,1.1)}${tree(310,40)}${tree(115,14,.7)}<g transform="translate(170 77) rotate(-12)"><rect width="116" height="64" rx="5" fill="#c7ac8a" stroke="#e9e1ca" stroke-width="2"/><path d="M58 0v64M0 32h116M0 16h12v32H0m116-32h-12v32h12" stroke="#f8f0df" fill="none"/><circle cx="58" cy="32" r="12" fill="none" stroke="#f8f0df"/><circle cx="8" cy="32" r="3" fill="none" stroke="#ae654b"/><path d="M5 24v-13h14" stroke="#657365" stroke-width="2" fill="none"/><rect class="ball pixel-ball" x="46" y="31" width="8" height="8" fill="#bc6c43"/>${person(40,17,'#608bab',.7)}${person(70,35,'#c8664d',.7)}</g><path d="M127 135h28m-25-4v12m23-12v12" stroke="#8e775e" stroke-width="4"/>${person(115,121,'#c8664d',.8)}`)+
-    scene(4,`<ellipse class="scene-ground" cx="568" cy="73" rx="83" ry="36" fill="#e3dfce"/>${building(490,10,83,65,'#b8c4b2','#d4dbc6','ATELIER',1)}<g transform="translate(600 34)"><rect width="30" height="43" rx="3" fill="#526657"/><rect x="4" y="5" width="22" height="26" fill="#a8c5b7"/><path d="M8 13l5 5-5 5m9 0h6" stroke="#46645b" fill="none" stroke-width="2"/><circle cx="7" cy="37" r="2" fill="#e1c985"/></g>${tree(638,9,.8)}${person(580,65,'#608bab',.8)}`)+
-    scene(3,`<ellipse class="scene-ground" cx="873" cy="170" rx="110" ry="42" fill="#dedfce"/>${building(774,83,132,88,'#d5c4a3','#e7dfc7','UNIVERSITÉ',2)}<g transform="translate(814 55)"><path d="M0 25l33-23 33 23Z" fill="#b6ab91"/><rect x="18" y="11" width="30" height="40" fill="#e5d8b9"/><circle cx="33" cy="26" r="10" fill="#f5f0dc" stroke="#a59d88"/><path d="M33 19v8l6 3" stroke="#526657" fill="none" stroke-width="1.5"/></g>${tree(947,109)}${person(839,179,'#608bab',.8)}${person(866,180,'#c8664d',.8)}<path d="M793 178h105m-101 5h95" stroke="#b5b9a6" stroke-width="3"/>`)+
-    scene(1,`<ellipse class="scene-ground" cx="378" cy="280" rx="110" ry="36" fill="#dfe0d0"/>${building(287,192,117,85,'#cb9273','#e4c5a6','COLLECTIF',2)}<g transform="translate(314 241)"><rect width="58" height="27" fill="#bdd2c2"/><ellipse cx="29" cy="18" rx="18" ry="7" fill="#f1e0bf"/><circle cx="13" cy="8" r="3" fill="#956a4d"/><circle cx="43" cy="8" r="3" fill="#bd9870"/><circle cx="30" cy="23" r="3" fill="#725a45"/><path d="M13 12v7m30-7v7m-13 7v-6" stroke="#567867" stroke-width="4"/></g><g transform="translate(409 213)"><path d="M0 0h30v59H0Z" fill="#e6d8bb"/><path d="M-4-3h38v7H-4Z" fill="#6b8070"/><rect x="7" y="12" width="16" height="22" class="window"/></g>${tree(442,225,.9)}${person(334,280,'#608bab',.8)}`)+
-    scene(2,`<ellipse class="scene-ground" cx="701" cy="369" rx="161" ry="53" fill="#e0decd"/>${building(557,272,84,94,'#c8896d','#ddbea0','CAFÉ',2)}<g transform="translate(559 337)"><path d="M0 0h78l8 13H-8Z" fill="#eee2c3"/><path d="M4 0l-3 13m18-13v13m17-13 2 13m17-13 4 13m13-13 6 13" stroke="#bd604b" stroke-width="8"/></g><path d="M661 367h35m-31-5v17m28-17v17" stroke="#918568" stroke-width="3"/><ellipse cx="671" cy="397" rx="12" ry="6" fill="#94775c"/><path d="M671 397v13" stroke="#79674f" stroke-width="3"/>${person(647,387,'#608bab',.7)}${person(682,389,'#c8664d',.7)}<g class="smoke pixel-smoke" aria-hidden="true"><rect x="600" y="252" width="5" height="5"/><rect x="606" y="240" width="4" height="4"/><rect x="599" y="228" width="5" height="5"/></g>${building(732,244,76,121,'#b5bcb1','#d3d7c7','BUREAU',3)}<path d="M800 267h26v70h-26m0-45h26m-26 22h26m-5-45v66" fill="none" stroke="#64756a" stroke-width="2"/>${tree(839,345,.8)}${tree(529,353,.7)}`)+
-    scene(0,`<ellipse class="scene-ground" cx="204" cy="430" rx="77" ry="32" fill="#e1dfce"/><g transform="translate(172 378)"><path d="M0 0l20-13h62L62 0Z" fill="#d3cbb5"/><path d="M62 0l20-13v55L62 54Z" fill="#a3ad98"/><rect width="62" height="54" fill="#d8cfb8"/><path d="M12 54V20h38v34" fill="#375b4d"/><path d="M17 54V24h28v30" fill="#819b83"/><path d="M-8 12h78v9H-8Z" fill="#c8664d"/><text x="7" y="8" class="small-sign">BONJOUR</text><path d="M17 43h27m-27 5h27" stroke="#c2cbb2" stroke-width="2"/></g><g transform="translate(143 392)"><path d="M0 0v49" stroke="#486556" stroke-width="3"/><rect x="-11" y="-11" width="22" height="22" rx="4" fill="#486556"/><path d="M-6 4V-5l6 6 6-6v9" stroke="#fff4dc" fill="none" stroke-width="2"/></g>${tree(96,383,.8)}${person(227,435,'#c8664d',.9)}`)+
-    `${tree(394,449,.8)}${tree(907,378)}${tree(965,418,.8)}${tree(97,260)}${tree(72,290,.8)}${tree(483,527,.8)}${tree(605,529,.6)}${tree(673,195,.7)}<g transform="translate(422 571)"><path d="M0 0h203l30 16H-30Z" fill="#d4d3c0"/><path d="M0-6h203M3-6v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18" stroke="#9daa96" stroke-width="2"/></g><g transform="translate(921 567)"><path d="M0 10h50l-9 12H12Z" fill="#bf7758"/><path d="M25 10v-36l-24 33h24" fill="#f8f4e4" stroke="#839b8a" stroke-width="1"/></g>`;
+  const courtPlayers=basketballPlayers.map(player=>scenePerson(player.x,player.y,player.color,player.scale)).join('');
+  const leisureScene=scene(5,`<ellipse class="scene-ground" cx="201" cy="116" rx="113" ry="53" fill="#d4dfc5"/>${tree(83,42,1.1)}${tree(310,40)}${tree(115,14,.7)}<g class="basketball-court" transform="translate(170 77) rotate(-12)"><rect width="116" height="64" rx="4" fill="#c7ac8a"/><rect x="3" y="3" width="110" height="58" rx="2" fill="none"/><path d="M58 3v58M3 32h110M3 17h15v30H3m110-30H98v30h15"/><circle cx="58" cy="32" r="12" fill="none"/><path d="M8 25V10h15M108 39v15H93"/><circle cx="8" cy="32" r="3" fill="none"/><circle cx="108" cy="32" r="3" fill="none"/>${courtPlayers}<rect class="ball-shadow" x="${basketballBall.x-2}" y="${basketballBall.y+7}" width="11" height="3"/><g class="basketball-ball-anchor" transform="translate(${basketballBall.x} ${basketballBall.y})"><g class="pixel-ball basketball-ball"><rect width="${basketballBall.size}" height="${basketballBall.size}" rx="1"/><path d="M3.5 0v7M0 3.5h7"/></g></g></g><g class="park-bench" transform="translate(127 135)"><path d="M0 0h28M3-5h22M3 0v12m22-12v12"/><path d="M1 4h26"/></g>${scenePerson(115,121,'#c8664d',.8)}`);
+  const projectsScene=scene(4,`<ellipse class="scene-ground" cx="568" cy="73" rx="83" ry="36" fill="#e3dfce"/>${building(490,10,83,65,'#afc0b0','#d7ddca','ATELIER',1,'atelier')}<g class="maker-bench" transform="translate(600 43)"><path d="M0 21h34M4 21v15m26-15v15"/><rect x="7" y="7" width="20" height="14" rx="1"/><path d="M10 10h14v8H10Zm-5 11h24"/><circle cx="31" cy="31" r="2"/></g>${tree(642,9,.8)}${scenePerson(580,64,'#608bab',.8)}`);
+  const learningScene=scene(3,`<ellipse class="scene-ground" cx="873" cy="170" rx="110" ry="42" fill="#dedfce"/>${building(774,83,132,88,'#d5c4a3','#e7dfc7','UNIVERSITÉ',2,'university')}${tree(947,109)}${scenePerson(839,179,'#608bab',.8)}${scenePerson(868,180,'#c8664d',.8)}<g class="bike-rack" transform="translate(913 177)"><path d="M0 8q0-12 8-12t8 12m6 0q0-12 8-12t8 12"/><path d="M-3 8h44"/></g>`);
+  const peopleScene=scene(1,`<ellipse class="scene-ground" cx="378" cy="280" rx="110" ry="36" fill="#dfe0d0"/>${building(287,192,117,85,'#c98f72','#e4c5a6','COLLECTIF',2,'collective')}<g class="community-table" transform="translate(315 270)"><ellipse cx="30" cy="8" rx="24" ry="7"/><path d="M30 14v13M10 27h40"/><circle cx="5" cy="17" r="4"/><circle cx="55" cy="17" r="4"/></g>${tree(442,225,.9)}${scenePerson(334,280,'#608bab',.8)}<g class="notice-stand" transform="translate(415 249)"><rect width="23" height="19" rx="1"/><path d="M5 5h13M5 10h9M5 15h11M5 19v13m13-13v13"/></g>`);
+  const experienceScene=scene(2,`<ellipse class="scene-ground" cx="701" cy="369" rx="161" ry="53" fill="#e0decd"/>${building(557,272,84,94,'#c8896d','#ddbea0','CAFÉ',2,'cafe')}<g class="pixel-smoke" aria-hidden="true"><rect x="609" y="242" width="5" height="5"/><rect x="603" y="231" width="4" height="4"/><rect x="610" y="220" width="5" height="5"/></g><g class="cafe-patio" transform="translate(658 385)"><ellipse cx="19" cy="8" rx="13" ry="6"/><path d="M19 14v15M7 29h24M2 8h-10m48 0h-10"/></g>${scenePerson(644,387,'#608bab',.72)}${scenePerson(692,389,'#c8664d',.72)}${building(732,244,76,121,'#b5bcb1','#d3d7c7','BUREAU',3,'office')}${tree(839,345,.8)}${tree(529,353,.7)}`);
+  const startScene=scene(0,`<ellipse class="scene-ground" cx="204" cy="430" rx="77" ry="32" fill="#e1dfce"/>${building(172,378,72,58,'#d8cfb8','#d3cbb5','BONJOUR',0,'shop')}<g class="metro-sign" transform="translate(143 392)"><path d="M0 0v49"/><rect x="-11" y="-11" width="22" height="22" rx="3"/><path d="M-6 4V-5l6 6 6-6v9"/></g>${tree(96,383,.8)}${scenePerson(226,435,'#c8664d',.86)}<g class="newspaper-box" transform="translate(258 420)"><rect width="15" height="21" rx="1"/><path d="M3 4h9v7H3Zm1 11h7m-7 3h8"/></g>`);
+  const cityDetails=`${tree(394,449,.8)}${tree(907,378)}${tree(965,418,.8)}${tree(97,260)}${tree(72,290,.8)}${tree(483,527,.8)}${tree(605,529,.6)}${tree(673,195,.7)}<g class="bridge" transform="translate(422 571)"><path d="M0 0h203l30 16H-30Z"/><path d="M0-6h203M3-6v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18"/></g><g class="sailboat" transform="translate(921 567)"><path d="M0 10h50l-9 12H12Z"/><path d="M25 10v-36l-24 33h24"/></g>`;
+  $('#scenery').innerHTML=leisureScene+projectsScene+learningScene+peopleScene+experienceScene+startScene+cityDetails;
 }
 
 function renderStations() {
@@ -131,7 +168,7 @@ function createTrain(pathId,color,speed,offset){
 }
 const trains=[createTrain('main-route','#994a36',37,125),createTrain('blue-route','#3c6481',44,540),createTrain('green-route','#456b54',29,210)];
 const walkers=[];
-const walkingPaths=['M245 436L321 384','M913 194L963 269','M345 292L411 284','M644 401L720 413','M111 170L151 190','M753 558L815 531','M500 101L553 106','M80 525L126 500'];
+const walkingPaths=['M272 455L326 417','M924 244L970 286','M455 300L510 320','M606 427L674 433','M90 210L143 235','M753 558L815 531','M678 174L734 186','M80 525L126 500'];
 walkingPaths.forEach((d,index)=>{
   const path=document.createElementNS(svgNS,'path');path.setAttribute('d',d);
   const group=document.createElementNS(svgNS,'g');group.classList.add('pixel-walker');group.innerHTML=pixelPerson(-7,-22,index%2?'#658aaa':'#c87855',.7);$('#walkers').append(group);

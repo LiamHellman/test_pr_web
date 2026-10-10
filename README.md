@@ -6,8 +6,9 @@ A bilingual personal portfolio centered on industrial relations, set in an illus
 
 - Six stations: introduction, people and work, experience, education, projects, and personal interests.
 - A permanent deep-green Montréal map palette with the original cream editorial frame.
-- Three route-bound pixel metro trains and two-frame pixel walking characters.
-- Stepped, GIF-inspired smoke, basketball, and station animations contained inside their scene zones.
+- One shared two-frame pixel character system for both travelling and scene figures.
+- Three route-bound pixel metro trains plus stepped, GIF-inspired smoke, basketball, and station motion.
+- Six purpose-built architecture styles with consistent roofs, masonry, windows, doors, signage, and scene-specific details.
 - Opaque station labels and a dedicated occlusion mask keep motion behind buildings and away from readable text.
 - Guided train tour and animation pause control.
 - English/French content and downloadable résumés.
@@ -28,6 +29,7 @@ Run the dependency-free animation-bound check with:
 
 ```sh
 node tests/pixel-bounds.mjs
+node tests/scene-cohesion.mjs
 ```
 
 ## Publish on GitHub Pages
