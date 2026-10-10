@@ -12,8 +12,8 @@ let tourTimer = null;
 const visited = new Set();
 
 const translations = {
-  en: { skip:'Skip to stations', brandSub:'A personal network', resume:'Résumé ↗', contact:'Say hello ↗', location:'MONTRÉAL, QUÉBEC', headline:'People.<br>Work.<br><em>Possibilities.</em>', intro:'I’m Liam. An industrial relations student with a computer science background and a curiosity for what makes people and workplaces thrive.', tour:'Take the scenic route', endTour:'End the tour', introHint:'Or pick a station. Every stop has a story.', ticket:'ONE CURIOUS MIND', ticketSub:'People + technology', mapCaption:'A LITTLE CITY. A FEW BIG IDEAS.', pause:'Pause motion', play:'Resume motion', night:'Night', day:'Day', linePeople:'People & work', lineTech:'Technology', lineLife:'Everyday life', mapHint:'Click a stop to explore ↗', stationsHeading:'YOUR NEXT STOP', visited:' / 6 explored', footer:'Built with curiosity. Rooted in Montréal.', previous:'← Previous stop', next:'Next stop →', close:'Close story', tourNext:'Continue the tour →' },
-  fr: { skip:'Aller aux stations', brandSub:'Un réseau personnel', resume:'CV ↗', contact:'Dire bonjour ↗', location:'MONTRÉAL, QUÉBEC', headline:'Humain.<br>Travail.<br><em>Possibilités.</em>', intro:'Moi, c’est Liam. Étudiant en relations industrielles avec un parcours en informatique, je m’intéresse à ce qui permet aux personnes et aux milieux de travail de s’épanouir.', tour:'Prendre la route panoramique', endTour:'Terminer la visite', introHint:'Ou choisissez une station. Chaque arrêt a son histoire.', ticket:'UN ESPRIT CURIEUX', ticketSub:'Humain + technologie', mapCaption:'UNE PETITE VILLE. DE GRANDES IDÉES.', pause:'Arrêter l’animation', play:'Reprendre l’animation', night:'Nuit', day:'Jour', linePeople:'Humain et travail', lineTech:'Technologie', lineLife:'Au quotidien', mapHint:'Explorez une station ↗', stationsHeading:'VOTRE PROCHAIN ARRÊT', visited:' / 6 explorées', footer:'Créé avec curiosité. Ancré à Montréal.', previous:'← Station précédente', next:'Station suivante →', close:'Fermer', tourNext:'Continuer la visite →' }
+  en: { skip:'Skip to the city map', brandSub:'A personal network', resume:'Résumé ↗', contact:'Say hello ↗', location:'MONTRÉAL, QUÉBEC', headline:'People.<br>Work.<br><em>Possibilities.</em>', intro:'I’m Liam. An industrial relations student with a computer science background and a curiosity for what makes people and workplaces thrive.', tour:'Take the scenic route', endTour:'End the tour', introHint:'Or pick a station. Every stop has a story.', ticket:'ONE CURIOUS MIND', ticketSub:'People + technology', mapCaption:'A LITTLE CITY. A FEW BIG IDEAS.', pause:'Pause motion', play:'Resume motion', linePeople:'People & work', lineTech:'Technology', lineLife:'Everyday life', mapHint:'Click a stop to explore ↗', footer:'Built with curiosity. Rooted in Montréal.', previous:'← Previous stop', next:'Next stop →', close:'Close story', tourNext:'Continue the tour →' },
+  fr: { skip:'Aller à la carte', brandSub:'Un réseau personnel', resume:'CV ↗', contact:'Dire bonjour ↗', location:'MONTRÉAL, QUÉBEC', headline:'Humain.<br>Travail.<br><em>Possibilités.</em>', intro:'Moi, c’est Liam. Étudiant en relations industrielles avec un parcours en informatique, je m’intéresse à ce qui permet aux personnes et aux milieux de travail de s’épanouir.', tour:'Prendre la route panoramique', endTour:'Terminer la visite', introHint:'Ou choisissez une station. Chaque arrêt a son histoire.', ticket:'UN ESPRIT CURIEUX', ticketSub:'Humain + technologie', mapCaption:'UNE PETITE VILLE. DE GRANDES IDÉES.', pause:'Arrêter l’animation', play:'Reprendre l’animation', linePeople:'Humain et travail', lineTech:'Technologie', lineLife:'Au quotidien', mapHint:'Explorez une station ↗', footer:'Créé avec curiosité. Ancré à Montréal.', previous:'← Station précédente', next:'Station suivante →', close:'Fermer', tourNext:'Continuer la visite →' }
 };
 const stops = [
   {x:160,y:480,en:{name:'Start here',sub:'A little introduction',title:'A curiosity for people.',lead:'Hi, I’m Liam Hellman. I’m studying industrial relations at Université de Montréal, alongside a minor in computer science.',cards:[['THE COMMON THREAD','People, work, and how things fit together','My experience spans a corporate technology team, a busy bar, and live events. Those settings have made me curious about how people collaborate, adapt, and find their place at work.'],['MY DIRECTION','Exploring industrial relations','I’m building a foundation in the relationships between workers, employers, and organizations. My technical background adds another perspective on the systems people use every day.']],chips:['Montréal','English & French','Industrial relations','Computer science']},fr:{name:'Départ',sub:'Quelques mots sur moi',title:'La curiosité de l’humain.',lead:'Bonjour, je suis Liam Hellman. J’étudie en relations industrielles à l’Université de Montréal, avec une mineure en informatique.',cards:[['LE FIL CONDUCTEUR','L’humain, le travail et leurs liens','Mon parcours passe par une équipe informatique en entreprise, un bar animé et des événements. Ces milieux ont éveillé ma curiosité pour la collaboration, l’adaptation et la place de chacun au travail.'],['MA DIRECTION','Explorer les relations industrielles','Je développe mes connaissances des rapports entre les travailleurs, les employeurs et les organisations. Mon bagage technique apporte un autre regard sur les systèmes utilisés au quotidien.']],chips:['Montréal','Français et anglais','Relations industrielles','Informatique']}},
@@ -55,11 +55,10 @@ function drawScenery() {
 function renderStations() {
   $('#stations').innerHTML = stops.map((stop,index)=>{
     const name=escapeText(stop[language].name),width=Math.max(95,name.length*7.4+35);
+    const labelX=index===1?-width-17:17;
     const state=`${visited.has(index)?' active':''}${visited.has(index)&&selected===index?' current':''}`;
-    return `<g class="station${state}" role="button" tabindex="0" data-stop="${index}" aria-label="${name}" transform="translate(${stop.x} ${stop.y})"><g class="station-pixel-pulse" aria-hidden="true"><rect x="-8" y="-8" width="3" height="3"/><rect x="5" y="-8" width="3" height="3"/><rect x="-8" y="5" width="3" height="3"/><rect x="5" y="5" width="3" height="3"/></g><circle class="station-ring" r="10"/><circle r="3" fill="#c8664d"/><g class="station-copy"><rect class="label-bg" x="17" y="-13" width="${width}" height="27" rx="5"/><circle cx="31" cy="0" r="8" fill="#c8664d"/><text class="station-number" x="31" y="3" text-anchor="middle">${index+1}</text><text class="station-label" x="45" y="5">${name}</text></g></g>`;
+    return `<g class="station${state}" role="button" tabindex="0" data-stop="${index}" aria-label="${name}" transform="translate(${stop.x} ${stop.y})"><g class="station-pixel-pulse" aria-hidden="true"><rect x="-8" y="-8" width="3" height="3"/><rect x="5" y="-8" width="3" height="3"/><rect x="-8" y="5" width="3" height="3"/><rect x="5" y="5" width="3" height="3"/></g><circle class="station-ring" r="10"/><circle r="3" fill="#c8664d"/><g class="station-copy"><rect class="label-bg" x="${labelX}" y="-13" width="${width}" height="27" rx="5"/><circle cx="${labelX+14}" cy="0" r="8" fill="#c8664d"/><text class="station-number" x="${labelX+14}" y="3" text-anchor="middle">${index+1}</text><text class="station-label" x="${labelX+28}" y="5">${name}</text></g></g>`;
   }).join('');
-  $('#station-list').innerHTML=stops.map((stop,index)=>`<button class="stop-button${visited.has(index)?' visited':''}${visited.has(index)&&selected===index?' selected':''}" data-stop="${index}" aria-haspopup="dialog"><span class="stop-index">${visited.has(index)?'✓':String(index+1).padStart(2,'0')}</span><span><span class="stop-title">${escapeText(stop[language].name)}</span><span class="stop-sub">${escapeText(stop[language].sub)}</span></span></button>`).join('');
-  $('#visited-count').textContent=visited.size;
 }
 
 function renderStory() {
@@ -94,11 +93,9 @@ function translate() {
   $('#cv-link').href=`assets/Liam-Hellman-CV-${language.toUpperCase()}.pdf`;
   $('#close-story').setAttribute('aria-label',translations[language].close);
   $('#city-title').textContent=language==='en'?'Liam’s Montréal':'Le Montréal de Liam';
-  $('#city-desc').textContent=language==='en'?'An illustrated city with six interactive metro stations, moving trains, and people. Use the station buttons below to explore each story.':'Une ville illustrée avec six stations de métro interactives, des trains et des passants. Utilisez les boutons des stations pour explorer chaque histoire.';
+  $('#city-desc').textContent=language==='en'?'An illustrated city with six interactive metro stations, moving trains, and people. Select any station to explore its story.':'Une ville illustrée avec six stations de métro interactives, des trains et des passants. Sélectionnez une station pour explorer son histoire.';
   $('#map-scroll').setAttribute('aria-label',language==='en'?'Interactive city map; scroll horizontally on small screens':'Carte interactive; défilement horizontal sur petit écran');
-  $('#station-list').setAttribute('aria-label',language==='en'?'Portfolio stations':'Stations du portfolio');
   $('.header-links').setAttribute('aria-label',language==='en'?'Main navigation':'Navigation principale');
-  $('.station-section').setAttribute('aria-label',language==='en'?'Explore the stations':'Explorer les stations');
   drawScenery();renderStations();updateControls();
   if($('#story').open) renderStory();
 }
@@ -107,11 +104,6 @@ function updateControls() {
   $('#motion').textContent=translations[language][paused?'play':'pause'];
   $('#motion').setAttribute('aria-pressed',String(paused));
   document.body.classList.toggle('motion-paused',paused||document.hidden||$('#story').open);
-  const night=document.body.classList.contains('night-mode');
-  $('#theme-icon').textContent=night?'☀':'☾';
-  $('.theme-label').textContent=translations[language][night?'day':'night'];
-  $('#theme').setAttribute('aria-pressed',String(night));
-  $('#theme').setAttribute('aria-label',language==='en'?`Switch to ${night?'day':'night'}`:`Passer en mode ${night?'jour':'nuit'}`);
   $('#tour').firstElementChild.textContent=translations[language][tourActive?'endTour':'tour'];
 }
 
@@ -204,11 +196,10 @@ document.addEventListener('click',event=>{const stop=event.target.closest('[data
 $('#city').addEventListener('keydown',event=>{const stop=event.target.closest('[data-stop]');if(stop&&(event.key==='Enter'||event.key===' ')){event.preventDefault();endTour();openStop(Number(stop.dataset.stop));}});
 $('#language').addEventListener('click',()=>{language=language==='en'?'fr':'en';translate();});
 $('#motion').addEventListener('click',()=>{paused=!paused;if(paused&&journey){const destination=journey.index;journey=null;openStop(destination);}updateControls();});
-$('#theme').addEventListener('click',()=>{document.body.classList.toggle('night-mode');updateControls();});
 $('#close-story').addEventListener('click',()=>{endTour();$('#story').close();});
 $('#story').addEventListener('cancel',()=>endTour());
 $('#story').addEventListener('click',event=>{if(event.target===$('#story')){const r=$('#story').getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom){endTour();$('#story').close();}}});
-$('#story').addEventListener('close',()=>{updateControls();if(!journey){const button=$(`#station-list [data-stop="${selected}"]`);button?.focus({preventScroll:true});}});
+$('#story').addEventListener('close',()=>{updateControls();if(!journey){const station=$(`#stations [data-stop="${selected}"]`);station?.focus({preventScroll:true});}});
 $('#prev').addEventListener('click',()=>{if(tourActive)travelTo(selected-1);else openStop(selected-1);});
 $('#next').addEventListener('click',()=>{if(tourActive&&selected===stops.length-1){endTour();$('#story').close();}else if(tourActive)travelTo(selected+1);else openStop(selected+1);});
 $('#tour').addEventListener('click',()=>{if(tourActive){endTour();return;}tourActive=true;updateControls();travelTo(0);});

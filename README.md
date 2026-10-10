@@ -5,13 +5,14 @@ A bilingual personal portfolio centered on industrial relations, set in an illus
 ## Explore
 
 - Six stations: introduction, people and work, experience, education, projects, and personal interests.
+- A permanent deep-green Montréal map palette with the original cream editorial frame.
 - Three route-bound pixel metro trains and two-frame pixel walking characters.
 - Stepped, GIF-inspired smoke, basketball, and station animations contained inside their scene zones.
-- Opaque station labels and strict SVG layer ordering keep every moving element away from readable text.
-- Guided train tour, day/night toggle, and animation pause control.
+- Opaque station labels and a dedicated occlusion mask keep motion behind buildings and away from readable text.
+- Guided train tour and animation pause control.
 - English/French content and downloadable résumés.
 - Keyboard-operable stations, native modal focus management, and automatic reduced-motion support.
-- Responsive layout with a horizontally scrollable city on small screens and separate station navigation.
+- Responsive layout with a horizontally scrollable city on small screens.
 
 ## Run locally
 

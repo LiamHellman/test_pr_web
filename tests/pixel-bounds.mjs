@@ -30,10 +30,23 @@ const sceneryLayer = html.indexOf('id="scenery"');
 const stationLayer = html.indexOf('id="stations"');
 const noteLayer = html.indexOf('id="map-notes"');
 assert(animationLayer > 0, 'Missing clipped animation layer');
-assert(animationLayer < sceneryLayer && sceneryLayer < stationLayer && stationLayer < noteLayer, 'Moving sprites must render below every map text layer');
-assert(html.includes('id="animation-layer" clip-path="url(#map-safe-clip)"'), 'Moving sprites must be clipped to the map');
+assert(sceneryLayer < animationLayer && animationLayer < stationLayer && stationLayer < noteLayer, 'Moving sprites need foreground visibility while station and map text stay on top');
+assert(html.includes('id="animation-layer" clip-path="url(#map-safe-clip)" mask="url(#animation-occlusion-mask)"'), 'Moving sprites must be clipped and use the occlusion mask');
+const occlusionMask = html.match(/<mask id="animation-occlusion-mask"[\s\S]*?<\/mask>/);
+assert(occlusionMask, 'Missing animation occlusion mask');
+const protectedZones = rectsFrom(occlusionMask[0]);
+assert(protectedZones.length >= 10, 'Every building sign and map note needs a protected zone');
+protectedZones.forEach(zone => assert(inside(zone, {left: 0, top: 0, right: 1100, bottom: 710}), 'Protected zone escaped the map'));
+const protectedBounds = protectedZones.map(zone => ({left: zone.x, right: zone.x + zone.width, top: zone.y, bottom: zone.y + zone.height}));
+assert((occlusionMask[0].match(/text-safe-zone/g) || []).length >= 10, 'Text-safe mask coverage is incomplete');
+assert((occlusionMask[0].match(/scene-occlusion-zone/g) || []).length >= 6, 'Building occlusion coverage is incomplete');
 assert(css.includes('#city { overflow: hidden; }'), 'Map motion must not escape the SVG viewport');
 assert(/\.label-bg\s*\{[\s\S]*?opacity:\s*1;/.test(css), 'Station text needs an opaque protection panel');
+assert(html.includes('class="map-panel night-mode"'), 'The deep-green map treatment must be permanent');
+assert(html.includes('<meta name="theme-color" content="#24382f">'), 'Browser theme color must match the deep-green map');
+assert(!html.includes('id="theme"'), 'The day/night switch must stay removed');
+assert(!html.includes('id="station-list"') && !html.includes('class="station-section"'), 'The redundant station-button section must stay removed');
+assert(!app.includes("$('#theme')") && !app.includes("$('#station-list')"), 'Removed controls must not leave runtime references');
 
 const stopsBlock = app.match(/const stops = \[([\s\S]*?)\n\];/);
 assert(stopsBlock, 'Missing station data');
@@ -44,12 +57,14 @@ const stationData = [...stopsBlock[1].matchAll(/\{x:(\d+),y:(\d+),en:\{name:'([^
 }));
 assert.equal(stationData.length, 6, 'Expected six station labels');
 for (const languageIndex of [0, 1]) {
-  const labels = stationData.map(station => {
+  const labels = stationData.map((station, index) => {
     const width = Math.max(95, station.names[languageIndex].length * 7.4 + 35);
-    return {left: station.x + 17, right: station.x + 17 + width, top: station.y - 13, bottom: station.y + 14};
+    const localX = index === 1 ? -width - 17 : 17;
+    return {left: station.x + localX, right: station.x + localX + width, top: station.y - 13, bottom: station.y + 14};
   });
   labels.forEach(label => assert(inside({x: label.left, y: label.top, width: label.right - label.left, height: label.bottom - label.top}, {left: 0, top: 0, right: 1100, bottom: 710}), 'Station label escaped the map'));
   labels.forEach((label, index) => labels.slice(index + 1).forEach(other => assert(!overlaps(label, other), 'Station labels overlap each other')));
+  labels.forEach(label => protectedBounds.forEach(zone => assert(!overlaps(label, zone), 'Station label overlaps protected scenery or map text')));
 }
 
 for (const id of ['pixel-person-a', 'pixel-person-b']) {
@@ -86,4 +101,4 @@ assert(app.includes('const walkerFrameDuration=1/8;'), 'Walker cadence must rema
 assert(css.includes('.station.current .station-pixel-pulse'), 'Only the current station may animate');
 assert(css.includes('@media(prefers-reduced-motion:reduce)'), 'Reduced-motion support is required');
 
-console.log('Version 1 pixel bounds verified: clipped motion layer, protected text, fixed sprite footprints, and stepped animation cadence.');
+console.log('Version 1 pixel bounds verified: coherent layering, protected text and buildings, fixed sprite footprints, and stepped animation cadence.');
