@@ -1,18 +1,17 @@
 # Liam Hellman — A personal network
 
-A bilingual personal portfolio centered on industrial relations, presented as a crisp 2D network map inspired by Montréal's early métro diagrams. Built with dependency-free HTML, CSS, JavaScript, and SVG.
+A bilingual personal portfolio centered on industrial relations, set in an illustrated Montréal-inspired city. Built with dependency-free HTML, CSS, JavaScript, and SVG.
 
 ## Explore
 
-- Six meaningful stops on a geographically coherent Montréal network: introduction, education, experience, industrial relations, projects, and personal interests.
-- Six linked city landmarks, including Roger-Gaudry pavilion, Bar Rosemont, the Berri and Guimard entrances, Place des Arts, and the Montréal Biosphere.
-- Four line-aware pixel métro trains that follow the tracks, ease between stops, and dwell at stations.
-- Two-frame pixel pedestrians who move only between featured stations and their paired landmarks after a train arrives.
-- Arrival-triggered pixel light sequences contained inside each station and landmark icon.
-- A restrained interface with only résumé, contact, and language controls.
+- Six stations: introduction, people and work, experience, education, projects, and personal interests.
+- Three route-bound pixel metro trains and two-frame pixel walking characters.
+- Stepped, GIF-inspired smoke, basketball, and station animations contained inside their scene zones.
+- Opaque station labels and strict SVG layer ordering keep every moving element away from readable text.
+- Guided train tour, day/night toggle, and animation pause control.
 - English/French content and downloadable résumés.
 - Keyboard-operable stations, native modal focus management, and automatic reduced-motion support.
-- Responsive layout with a Berri–UQAM-centered, horizontally pannable map on small screens.
+- Responsive layout with a horizontally scrollable city on small screens and separate station navigation.
 
 ## Run locally
 
@@ -38,7 +37,7 @@ All asset references are relative, so the site works at either a repository subp
 
 ## Edit
 
-- `app.js`: bilingual copy, station and landmark data, and synchronized train and pedestrian behavior.
+- `app.js`: bilingual copy, station coordinates, illustrations, and train behavior.
 - `style.css`: layout, colours, responsive styles, and reduced-motion behavior.
 - `index.html`: page structure, metadata, and content security policy.
 - `assets/`: original supplied English/French résumé PDFs and favicon.

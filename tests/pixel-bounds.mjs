@@ -18,43 +18,72 @@ const rectsFrom = markup => [...markup.matchAll(/<rect[^>]*x="(-?[\d.]+)"[^>]*y=
   width: Number(match[3]),
   height: Number(match[4])
 }));
+const overlaps = (first, second) => (
+  first.left < second.right
+  && first.right > second.left
+  && first.top < second.bottom
+  && first.bottom > second.top
+);
 
-const landmarkBounds = {
-  udem: {left: 8, top: 9, right: 107, bottom: 74},
-  rosemont: {left: 8, top: 20, right: 104, bottom: 78},
-  berri: {left: 9, top: 2, right: 91, bottom: 73},
-  pda: {left: 6, top: 28, right: 111, bottom: 77},
-  square: {left: 18, top: 6, right: 94, bottom: 65},
-  drapeau: {left: 18, top: 6, right: 96, bottom: 84}
-};
+const animationLayer = html.indexOf('id="animation-layer"');
+const sceneryLayer = html.indexOf('id="scenery"');
+const stationLayer = html.indexOf('id="stations"');
+const noteLayer = html.indexOf('id="map-notes"');
+assert(animationLayer > 0, 'Missing clipped animation layer');
+assert(animationLayer < sceneryLayer && sceneryLayer < stationLayer && stationLayer < noteLayer, 'Moving sprites must render below every map text layer');
+assert(html.includes('id="animation-layer" clip-path="url(#map-safe-clip)"'), 'Moving sprites must be clipped to the map');
+assert(css.includes('#city { overflow: hidden; }'), 'Map motion must not escape the SVG viewport');
+assert(/\.label-bg\s*\{[\s\S]*?opacity:\s*1;/.test(css), 'Station text needs an opaque protection panel');
 
-let landmarkPixelCount = 0;
-for (const [id, bounds] of Object.entries(landmarkBounds)) {
-  const template = app.match(new RegExp(id + ': `([\\s\\S]*?)`[,\\n]'));
-  assert(template, `Missing ${id} landmark template`);
-  const pixelGroup = template[1].match(/<g class="landmark-pixels"[^>]*>(.*?)<\/g>/);
-  assert(pixelGroup, `Missing ${id} pixel group`);
-  const rects = rectsFrom(pixelGroup[1]);
-  assert(rects.length > 0, `Missing ${id} pixel details`);
-  rects.forEach(rect => assert(inside(rect, bounds), `${id} pixel escaped its icon bounds`));
-  landmarkPixelCount += rects.length;
+const stopsBlock = app.match(/const stops = \[([\s\S]*?)\n\];/);
+assert(stopsBlock, 'Missing station data');
+const stationData = [...stopsBlock[1].matchAll(/\{x:(\d+),y:(\d+),en:\{name:'([^']+)'[\s\S]*?\},fr:\{name:'([^']+)'/g)].map(match => ({
+  x: Number(match[1]),
+  y: Number(match[2]),
+  names: [match[3], match[4]]
+}));
+assert.equal(stationData.length, 6, 'Expected six station labels');
+for (const languageIndex of [0, 1]) {
+  const labels = stationData.map(station => {
+    const width = Math.max(95, station.names[languageIndex].length * 7.4 + 35);
+    return {left: station.x + 17, right: station.x + 17 + width, top: station.y - 13, bottom: station.y + 14};
+  });
+  labels.forEach(label => assert(inside({x: label.left, y: label.top, width: label.right - label.left, height: label.bottom - label.top}, {left: 0, top: 0, right: 1100, bottom: 710}), 'Station label escaped the map'));
+  labels.forEach((label, index) => labels.slice(index + 1).forEach(other => assert(!overlaps(label, other), 'Station labels overlap each other')));
 }
 
-const person = html.match(/<symbol id="person"[\s\S]*?<\/symbol>/);
-assert(person, 'Missing pixel person symbol');
-rectsFrom(person[0]).forEach(rect => {
-  assert(inside(rect, {left: 0, top: 0, right: 16, bottom: 30}), 'Walker pixel escaped its 16×30 sprite');
-});
+for (const id of ['pixel-person-a', 'pixel-person-b']) {
+  const symbol = html.match(new RegExp(`<symbol id="${id}"[\\s\\S]*?<\\/symbol>`));
+  assert(symbol, `Missing ${id} sprite`);
+  rectsFrom(symbol[0]).forEach(rect => {
+    assert(inside(rect, {left: 0, top: 0, right: 18, bottom: 34}), `${id} escaped its 18×34 sprite`);
+  });
+}
 
-const trainMarkup = app.match(/group\.innerHTML = \[([\s\S]*?)\]\.join\(''\);/);
+const trainMarkup = app.match(/car\.innerHTML=`([\s\S]*?)`;/);
 assert(trainMarkup, 'Missing pixel train markup');
 rectsFrom(trainMarkup[1]).forEach(rect => {
-  assert(inside(rect, {left: -20, top: -7, right: 20, bottom: 9}), 'Train pixel escaped the previously verified train footprint');
+  assert(inside(rect, {left: -14, top: -8, right: 14, bottom: 8}), 'Train detail escaped the original train footprint');
 });
-assert(css.includes('.train-shell { stroke: var(--ink); stroke-width: 1.6;'), 'Train outline changed beyond its verified footprint');
+assert(trainMarkup[1].includes('d="M-13-6H9v2h4V6H9v1h-22Z"'), 'Train body changed beyond its approved footprint');
 
-assert(app.includes('x="${stop.x - 6}"') && app.includes('x="${stop.x + 1}"'), 'Station pixels changed position');
-assert(app.includes('while (activeArrivalIds.length > 2)'), 'Arrival animation budget must remain capped at two');
-assert(!/\b(?:filter|backdrop-filter|perspective)\s*:/.test(css), 'Blur, filters, and perspective are not allowed');
+const pulseMarkup = app.match(/<g class="station-pixel-pulse"[\s\S]*?<\/g>/);
+assert(pulseMarkup, 'Missing contained station animation');
+rectsFrom(pulseMarkup[0]).forEach(rect => {
+  assert(inside(rect, {left: -10, top: -10, right: 10, bottom: 10}), 'Station animation escaped the stop marker');
+});
 
-console.log(`Pixel bounds verified: ${landmarkPixelCount} landmark pixels, fixed train/walker footprints, and a two-scene animation cap.`);
+const walkingPaths = app.match(/const walkingPaths=\[([^\]]+)\]/);
+assert(walkingPaths, 'Missing fixed pedestrian paths');
+const pathNumbers = [...walkingPaths[1].matchAll(/-?\d+(?:\.\d+)?/g)].map(match => Number(match[0]));
+for (let index = 0; index < pathNumbers.length; index += 2) {
+  assert(pathNumbers[index] >= 0 && pathNumbers[index] <= 1100, 'Walker path escaped map width');
+  assert(pathNumbers[index + 1] >= 0 && pathNumbers[index + 1] <= 710, 'Walker path escaped map height');
+}
+
+assert(app.includes('const trainFrameDuration=1/12;'), 'Train cadence must remain stepped at 12 FPS');
+assert(app.includes('const walkerFrameDuration=1/8;'), 'Walker cadence must remain stepped at 8 FPS');
+assert(css.includes('.station.current .station-pixel-pulse'), 'Only the current station may animate');
+assert(css.includes('@media(prefers-reduced-motion:reduce)'), 'Reduced-motion support is required');
+
+console.log('Version 1 pixel bounds verified: clipped motion layer, protected text, fixed sprite footprints, and stepped animation cadence.');
