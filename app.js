@@ -1,249 +1,72 @@
 'use strict';
-
-// Everything is local: no analytics, APIs, cookies, or third-party scripts.
-const $ = (selector) => document.querySelector(selector);
-const svgNS = 'http://www.w3.org/2000/svg';
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-let language = 'en';
-let selected = 0;
-let paused = reducedMotion.matches;
-let tourActive = false;
-let tourTimer = null;
-const visited = new Set();
-
-const translations = {
-  en: { skip:'Skip to the city map', brandSub:'A personal network', resume:'Résumé ↗', contact:'Say hello ↗', location:'MONTRÉAL, QUÉBEC', headline:'People.<br>Work.<br><em>Possibilities.</em>', intro:'I’m Liam. An industrial relations student with a computer science background and a curiosity for what makes people and workplaces thrive.', tour:'Take the scenic route', endTour:'End the tour', introHint:'Or pick a station. Every stop has a story.', ticket:'ONE CURIOUS MIND', ticketSub:'People + technology', mapCaption:'A LITTLE CITY. A FEW BIG IDEAS.', pause:'Pause motion', play:'Resume motion', linePeople:'People & work', lineTech:'Technology', lineLife:'Everyday life', mapHint:'Click a stop to explore ↗', footer:'Built with curiosity. Rooted in Montréal.', previous:'← Previous stop', next:'Next stop →', close:'Close story', tourNext:'Continue the tour →' },
-  fr: { skip:'Aller à la carte', brandSub:'Un réseau personnel', resume:'CV ↗', contact:'Dire bonjour ↗', location:'MONTRÉAL, QUÉBEC', headline:'Humain.<br>Travail.<br><em>Possibilités.</em>', intro:'Moi, c’est Liam. Étudiant en relations industrielles avec un parcours en informatique, je m’intéresse à ce qui permet aux personnes et aux milieux de travail de s’épanouir.', tour:'Prendre la route panoramique', endTour:'Terminer la visite', introHint:'Ou choisissez une station. Chaque arrêt a son histoire.', ticket:'UN ESPRIT CURIEUX', ticketSub:'Humain + technologie', mapCaption:'UNE PETITE VILLE. DE GRANDES IDÉES.', pause:'Arrêter l’animation', play:'Reprendre l’animation', linePeople:'Humain et travail', lineTech:'Technologie', lineLife:'Au quotidien', mapHint:'Explorez une station ↗', footer:'Créé avec curiosité. Ancré à Montréal.', previous:'← Station précédente', next:'Station suivante →', close:'Fermer', tourNext:'Continuer la visite →' }
-};
-const stops = [
-  {x:160,y:480,en:{name:'Start here',sub:'A little introduction',title:'A curiosity for people.',lead:'Hi, I’m Liam Hellman. I’m studying industrial relations at Université de Montréal, alongside a minor in computer science.',cards:[['THE COMMON THREAD','People, work, and how things fit together','My experience spans a corporate technology team, a busy bar, and live events. Those settings have made me curious about how people collaborate, adapt, and find their place at work.'],['MY DIRECTION','Exploring industrial relations','I’m building a foundation in the relationships between workers, employers, and organizations. My technical background adds another perspective on the systems people use every day.']],chips:['Montréal','English & French','Industrial relations','Computer science']},fr:{name:'Départ',sub:'Quelques mots sur moi',title:'La curiosité de l’humain.',lead:'Bonjour, je suis Liam Hellman. J’étudie en relations industrielles à l’Université de Montréal, avec une mineure en informatique.',cards:[['LE FIL CONDUCTEUR','L’humain, le travail et leurs liens','Mon parcours passe par une équipe informatique en entreprise, un bar animé et des événements. Ces milieux ont éveillé ma curiosité pour la collaboration, l’adaptation et la place de chacun au travail.'],['MA DIRECTION','Explorer les relations industrielles','Je développe mes connaissances des rapports entre les travailleurs, les employeurs et les organisations. Mon bagage technique apporte un autre regard sur les systèmes utilisés au quotidien.']],chips:['Montréal','Français et anglais','Relations industrielles','Informatique']}},
-  {x:410,y:335,en:{name:'People & work',sub:'What draws me in',title:'The human side of work.',lead:'Industrial relations brings together questions I want to explore: how we work, how we organize, and how we navigate different interests.',cards:[['AREA OF INTEREST','Labour & employee relations','I’m interested in dialogue between workers and employers, collective representation, and the ways organizations handle competing needs.'],['AREA OF INTEREST','Recruitment & people experience','I want to understand how organizations connect with candidates and how the experience of work develops from that first conversation onward.'],['AREA OF INTEREST','Organizations & technology','With a background in computer science, I’m curious about how digital tools can support HR work and how technological change affects people.']],chips:['Labour relations','Talent acquisition','Organizational development','HR technology']},fr:{name:'Humain et travail',sub:'Ce qui m’intéresse',title:'Le côté humain du travail.',lead:'Les relations industrielles réunissent les questions que je souhaite explorer : comment travailler ensemble, s’organiser et composer avec des intérêts différents.',cards:[['CHAMP D’INTÉRÊT','Relations du travail','Je m’intéresse au dialogue entre les travailleurs et les employeurs, à la représentation collective et à la façon de concilier des besoins différents.'],['CHAMP D’INTÉRÊT','Recrutement et expérience employé','Je veux comprendre comment les organisations entrent en contact avec les candidats et comment l’expérience du travail se construit à partir de ce premier échange.'],['CHAMP D’INTÉRÊT','Organisations et technologie','Avec mon parcours en informatique, je m’intéresse aux outils numériques en RH et aux effets des changements technologiques sur les personnes.']],chips:['Relations du travail','Acquisition de talents','Développement organisationnel','Technologie RH']}},
-  {x:700,y:460,en:{name:'Experience',sub:'Different worlds of work',title:'Learning on the ground.',lead:'Different environments. Different responsibilities. A consistent opportunity to work with people and solve practical problems.',cards:[['AUG 2024 — PRESENT · BAR ROSEMONT','Bartender','Providing customer service, managing the bar, and creating new recipes. A hands-on environment where communication and coordination matter every shift.'],['MAY 2022 — APR 2023 · CROIX BLEUE CANASSURANCE','DevOps intern','Worked in an Agile team, maintained and updated DNS servers, and used Microsoft Azure, infrastructure as code, and programming tools.'],['JUN — SEP 2021 · XP-MTL','Event technician','Provided customer service, handled artist scheduling and management, and assisted with event coordination.']],chips:['Customer service','Teamwork','Coordination','Adaptability']},fr:{name:'Expérience',sub:'Différents milieux de travail',title:'Apprendre sur le terrain.',lead:'Des environnements variés, des responsabilités différentes et des occasions de travailler avec les gens et de résoudre des problèmes concrets.',cards:[['AOÛT 2024 — PRÉSENT · BAR ROSEMONT','Barman','Service à la clientèle, gestion du bar et création de nouvelles recettes. Un milieu concret où la communication et la coordination comptent à chaque quart.'],['MAI 2022 — AVRIL 2023 · CROIX BLEUE CANASSURANCE','Stagiaire DevOps','Travail au sein d’une équipe Agile, maintenance et mise à jour de serveurs DNS, utilisation de Microsoft Azure, de l’infrastructure en tant que code et d’outils de programmation.'],['JUIN — SEPTEMBRE 2021 · XP-MTL','Technicien événementiel','Service à la clientèle, gestion des horaires des artistes et soutien à la coordination d’événements.']],chips:['Service à la clientèle','Travail d’équipe','Coordination','Adaptabilité']}},
-  {x:840,y:220,en:{name:'Learning',sub:'Building a foundation',title:'Two fields. One perspective.',lead:'My studies combine an interest in people and organizations with a practical understanding of technology.',cards:[['2024 — ONGOING · UNIVERSITÉ DE MONTRÉAL','Industrial relations + computer science','Working toward a bachelor’s degree with a major in industrial relations and a minor in computer science.'],['2021 — 2024 · COLLÈGE DE MAISONNEUVE','Administration & mathematics','A DEC that laid a foundation in administration and quantitative thinking.'],['2016 — 2021 · ACADÉMIE DE ROBERVAL','Robotics & English literature','An early combination of technical exploration and an interest in language and ideas.']],chips:['Université de Montréal','Administration','Quantitative thinking','Continuous learning']},fr:{name:'Formation',sub:'Construire mes bases',title:'Deux domaines. Un regard.',lead:'Mon parcours allie un intérêt pour les personnes et les organisations à une compréhension pratique de la technologie.',cards:[['2024 — EN COURS · UNIVERSITÉ DE MONTRÉAL','Relations industrielles et informatique','Baccalauréat en cours avec une majeure en relations industrielles et une mineure en informatique.'],['2021 — 2024 · COLLÈGE DE MAISONNEUVE','Administration et mathématiques','Un DEC qui m’a apporté des bases en administration et en raisonnement quantitatif.'],['2016 — 2021 · ACADÉMIE DE ROBERVAL','Robotique et littérature anglaise','Une première combinaison d’exploration technique et d’intérêt pour la langue et les idées.']],chips:['Université de Montréal','Administration','Analyse quantitative','Apprentissage continu']}},
-  {x:585,y:130,en:{name:'Projects',sub:'An instinct to build',title:'Ideas, made tangible.',lead:'My technical projects are a place to experiment. They complement my industrial relations studies and show how I turn curiosity into something concrete.',cards:[['JAN 2025 · REACT / JAVASCRIPT / OPENAI','Factify.Tech','Built a web app and Chrome extension using LLMs to analyze language-based biases and claims. The extension lets users select text or videos for analysis. AI-generated assessments are an exploratory tool, rather than a guarantee of accuracy.'],['FEB 2025 · PYTHON / OPENCV / DLIB','Roast-Me','Developed a playful computer vision web app that generates roasts or compliments from detected facial proportions, with AI voice-over. Used OpenCV and Dlib for facial tracking.'],['TECHNICAL TOOLKIT','A second set of tools','Experience with Python, Java, SQL, JavaScript, R, React, Flask, Git, Terraform, and Microsoft Azure.']],chips:['Prototyping','Web applications','AI experimentation','Cloud tools']},fr:{name:'Projets',sub:'L’envie de créer',title:'Des idées concrétisées.',lead:'Mes projets techniques sont un terrain d’expérimentation. Ils complètent mes études en relations industrielles et montrent comment je transforme ma curiosité en réalisations.',cards:[['JANVIER 2025 · REACT / JAVASCRIPT / OPENAI','Factify.Tech','Création d’une application web et d’une extension Chrome utilisant des LLM pour analyser des biais linguistiques et des affirmations. L’extension permet de sélectionner du texte ou des vidéos. Les analyses par IA restent exploratoires et ne garantissent pas l’exactitude.'],['FÉVRIER 2025 · PYTHON / OPENCV / DLIB','Roast-Me','Développement d’une application ludique de vision par ordinateur qui génère des critiques humoristiques ou des compliments à partir de proportions faciales détectées, avec narration par IA. Suivi facial avec OpenCV et Dlib.'],['OUTILS TECHNIQUES','Une autre boîte à outils','Expérience avec Python, Java, SQL, JavaScript, R, React, Flask, Git, Terraform et Microsoft Azure.']],chips:['Prototypage','Applications web','Expérimentation IA','Outils infonuagiques']}},
-  {x:265,y:150,en:{name:'Off the clock',sub:'Beyond the résumé',title:'Room for everything else.',lead:'Outside work and university, I like having more than one thing to be curious about.',cards:[['MOVE','Team sports & martial arts','Basketball, hockey, soccer, and martial arts are among my interests. I also participate in intramural basketball.'],['EXPLORE','Art, history, politics & cooking','I enjoy both big ideas and hands-on creativity, including experimenting in the kitchen.'],['CONNECT','Community & languages','My clubs include UdeM AI and MealCare. I’m fluent in English and French, and learning Spanish and Japanese.']],chips:['Basketball','Cooking','Art & history','MealCare','Languages']},fr:{name:'Après le travail',sub:'Au-delà du CV',title:'Une place pour le reste.',lead:'En dehors du travail et de l’université, j’aime garder plusieurs sources de curiosité.',cards:[['BOUGER','Sports d’équipe et arts martiaux','Basketball, hockey, soccer et arts martiaux font partie de mes intérêts. Je participe aussi au basketball intra-muros.'],['EXPLORER','Art, histoire, politique et cuisine','J’aime autant les grandes idées que la création concrète, notamment l’expérimentation en cuisine.'],['ÉCHANGER','Communauté et langues','Mes clubs comprennent UdeM AI et MealCare. Je parle français et anglais et j’apprends l’espagnol et le japonais.']],chips:['Basketball','Cuisine','Art et histoire','MealCare','Langues']}}
+const $=s=>document.querySelector(s);
+let lang='fr',current=0,paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const visited=new Set();
+const copy={fr:{brand:'Humain. Travail. Montréal.',contact:'Dire bonjour ↗',eyebrow:'MONTRÉAL, QC · RELATIONS INDUSTRIELLES',headline:'Un parcours.<br><em>Toute une ville.</em>',intro:'Moi, c’est Liam. L’humain me passionne, la technologie m’inspire. Bienvenue dans mon petit Montréal.',tour:'Suivez Pepper →',note:'6 arrêts pour faire connaissance. À votre rythme.',mapTitle:'MONTRÉAL EN MINIATURE',season:'● AUTOMNE, 16 °C · IMAGINÉ',hint:'Glissez pour explorer · Choisissez un arrêt',reset:'Recentrer',line:'LIGNE 01 · MON PARCOURS',footer:'Fait de curiosité. Ancré à Montréal.',previous:'← Précédent',next:'Suivant →',finish:'Fin de la visite ✓'},en:{brand:'People. Work. Montréal.',contact:'Say hello ↗',eyebrow:'MONTRÉAL, QC · INDUSTRIAL RELATIONS',headline:'One journey.<br><em>A whole city.</em>',intro:'I’m Liam. Inspired by people, curious about technology. Welcome to my little Montréal.',tour:'Follow Pepper →',note:'6 stops to get acquainted. At your own pace.',mapTitle:'MONTRÉAL IN MINIATURE',season:'● AUTUMN, 16 °C · IMAGINED',hint:'Drag to explore · Choose a stop',reset:'Recenter',line:'LINE 01 · MY JOURNEY',footer:'Built with curiosity. Rooted in Montréal.',previous:'← Previous',next:'Next →',finish:'Tour complete ✓'}};
+// CV facts supplied by Liam. Landmarks are narrative anchors, not employer addresses.
+const stops=[
+{x:455,y:695,fr:['Bonjour !','Square Victoria','L’humain comme point de départ.','Je suis Liam Hellman, étudiant en relations industrielles avec une mineure en informatique à l’Université de Montréal. Je souhaite mettre ma curiosité, mon sens du service et mon aisance avec les outils numériques au service des ressources humaines.',['Relations industrielles','Français + anglais','Montréal'],[['CAP SUR LES RH','Des personnes et des organisations','Le recrutement, l’expérience employé et les relations du travail sont des domaines que je souhaite explorer. Mes expériences en service, en événementiel et en technologie constituent mon point de départ.'],['DEUX REGARDS','L’humain et les systèmes','Mon parcours combine des études sur le travail et une formation technique. Je m’intéresse à la manière dont les outils peuvent soutenir la collaboration et les équipes.']]],en:['Hello there!','Victoria Square','People are the starting point.','I’m Liam Hellman, an industrial relations student with a computer science minor at Université de Montréal. I want to bring curiosity, a service mindset and confidence with digital tools to human resources.',['Industrial relations','French + English','Montréal'],[['TOWARD HR','People and organizations','Recruitment, employee experience and labour relations are areas I want to explore. My experience in service, events and technology gives me a practical starting point.'],['TWO PERSPECTIVES','People and systems','My studies combine an understanding of work with a technical foundation. I’m interested in how tools can support collaboration and teams.']]]},
+{x:530,y:260,fr:['Formation','Université de Montréal','Apprendre à comprendre le travail.','Les relations industrielles pour comprendre les milieux de travail. L’informatique pour mieux comprendre leurs outils.',['UdeM','Formation en cours'],[['AOÛT 2024 — MAI 2027 PRÉVU','Université de Montréal','Baccalauréat ès arts et sciences : majeure en relations industrielles et mineure en informatique.'],['AOÛT 2021 — MAI 2024','Collège de Maisonneuve','DEC en administration et mathématiques.'],['2016 — 2021','Académie de Roberval','Robotique et littérature anglaise.']]],en:['Education','Université de Montréal','Learning how work works.','Industrial relations to understand workplaces. Computer science to understand their tools.',['UdeM','Studies in progress'],[['AUG 2024 — MAY 2027 EXPECTED','Université de Montréal','Bachelor of Arts and Science: major in Industrial Relations and minor in Computer Science.'],['AUG 2021 — MAY 2024','Collège de Maisonneuve','DEC in Administration and Mathematics.'],['2016 — 2021','Académie de Roberval','Robotics and English Literature.']]]},
+{x:1110,y:350,fr:['Expérience','Quartier Rosemont','Le terrain, ma première école.','Du service à la clientèle aux projets techniques, j’ai appris à communiquer, à coordonner et à m’adapter.',['Service','Coordination','Collaboration'],[['AOÛT 2024 — PRÉSENT · BAR ROSEMONT','Barman','Assurer le service à la clientèle dans un milieu animé, gérer les opérations du bar, composer avec plusieurs priorités et créer de nouvelles recettes.'],['MAI 2022 — AVRIL 2023 · CANASSISTANCE','Stagiaire DevOps · Croix Bleue Canassurance','Collaborer dans une équipe Agile, maintenir et mettre à jour des serveurs DNS, travailler avec Microsoft Azure et utiliser l’infrastructure en tant que code et des outils de programmation.'],['JUIN — SEPTEMBRE 2021 · XP-MTL','Technicien événementiel','Assurer le service et le soutien sur place, coordonner les horaires et les échanges avec les artistes et contribuer à la logistique des événements.']]],en:['Experience','Rosemont neighbourhood','Learning on the ground.','From customer service to technical projects, I’ve learned to communicate, coordinate and adapt.',['Service','Coordination','Collaboration'],[['AUG 2024 — PRESENT · BAR ROSEMONT','Bartender','Deliver customer service in a fast-paced environment, manage daily bar operations, balance multiple priorities and develop new recipes.'],['MAY 2022 — APR 2023 · CANASSISTANCE','DevOps intern · Croix Bleue Canassurance','Collaborated in an Agile team, maintained and updated DNS servers, worked with Microsoft Azure, infrastructure as code and programming tools.'],['JUN — SEP 2021 · XP-MTL','Event technician','Provided customer service and on-site support, coordinated schedules and communication with artists, and supported event logistics.']]]},
+{x:800,y:610,fr:['Savoir-faire','Centre-ville','À l’aise avec les gens et les outils.','Un bagage pratique pour travailler avec des équipes, organiser l’information et découvrir de nouveaux systèmes.',['Communication','Outils numériques'],[['RH ET PRODUCTIVITÉ','Les outils du quotidien','Microsoft 365, Workday, UKG, Google Forms, Microsoft Forms et Microsoft Planner. Ces outils figurent dans mon parcours; je ne les présente pas comme une certification.'],['INFORMATIQUE','Un regard technique','Python, Java, SQL, JavaScript, HTML/CSS, R, Bash, Git et React. Expérience avec Azure et Terraform.'],['LANGUES','Créer des liens','Français et anglais courants. Apprentissage de l’espagnol et du japonais.']]],en:['Skills','Downtown','Comfortable with people and tools.','A practical foundation for working with teams, organizing information and learning new systems.',['Communication','Digital tools'],[['HR & PRODUCTIVITY','Everyday tools','Microsoft 365, Workday, UKG, Google Forms, Microsoft Forms and Microsoft Planner. These are tools from my background, rather than claimed certifications.'],['COMPUTER SCIENCE','A technical perspective','Python, Java, SQL, JavaScript, HTML/CSS, R, Bash, Git and React. Experience with Azure and Terraform.'],['LANGUAGES','Making connections','Fluent French and English. Currently learning Spanish and Japanese.']]]},
+{x:1110,y:665,fr:['Projets','Vieux-Montréal','Des idées qui prennent forme.','J’aime explorer une idée en construisant quelque chose de concret. Deux projets de mon parcours technique.',['Curiosité','Technologie'],[['JANVIER 2025','Factify.Tech','Développement d’une application web et d’une extension Chrome pour analyser des biais linguistiques et vérifier des affirmations à l’aide de LLM. Analyse de texte et de vidéos sélectionnés sur une page. Technologies : React, CSS, JavaScript et OpenAI.'],['FÉVRIER 2025','Roast-Me','Application utilisant la vision par ordinateur pour produire des commentaires humoristiques ou des compliments. Suivi facial avec OpenCV et Dlib, génération de texte par LLM et lecture vocale. Technologies : Python, HTML, CSS et JavaScript.']]],en:['Projects','Old Montréal','Ideas taking shape.','I enjoy exploring an idea by building something tangible. Two projects from my technical background.',['Curiosity','Technology'],[['JANUARY 2025','Factify.Tech','Built a web app and Chrome extension to analyze linguistic bias and fact-check claims using LLMs, processing selected text and video content. Technologies: React, CSS, JavaScript and OpenAI.'],['FEBRUARY 2025','Roast-Me','Built an app using computer vision to create humorous comments or compliments. Facial tracking with OpenCV and Dlib, LLM-generated text and voice-over. Technologies: Python, HTML, CSS and JavaScript.']]]},
+{x:730,y:405,fr:['Au-delà du travail','Parc du Mont-Royal','La curiosité ne s’arrête pas au bureau.','Le sport, les arts et les moments partagés font aussi partie de mon parcours. Et Pepper est toujours partant pour une promenade.',['Sports d’équipe','Arts','Cuisine'],[['SUR LE TERRAIN','Jouer collectif','Basketball, hockey, soccer et arts martiaux. Participation au basketball intra-muros.'],['SUR LE CAMPUS','D’autres communautés','UdeM AI et MealCare font partie des clubs mentionnés dans mon parcours.'],['AU QUOTIDIEN','Continuer à explorer','Histoire, arts visuels, politique, cuisine, informatique et robotique. Pour échanger : liamhellman@gmail.com.']]],en:['Beyond work','Mount Royal Park','Curiosity doesn’t clock out.','Sports, art and shared moments are part of my story too. And Pepper is always ready for a walk.',['Team sports','Art','Cooking'],[['ON THE COURT','Playing together','Basketball, hockey, soccer and martial arts. Participation in intramural basketball.'],['ON CAMPUS','Other communities','UdeM AI and MealCare are clubs listed in my background.'],['EVERYDAY LIFE','Keep exploring','History, visual arts, politics, cooking, computer science and robotics. Get in touch: liamhellman@gmail.com.']]]}
 ];
-
-function escapeText(value) { return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
-function windows(width,height,floors) {
-  if(!floors) return '';
-  const columns=Math.max(2,Math.floor(width/24));
-  const endX=width-29;
-  const columnStep=columns===1?0:(endX-10)/(columns-1);
-  const lastRow=Math.max(12,height-50);
-  const rowStep=floors===1?0:(lastRow-12)/(floors-1);
-  let result='';
-  for(let row=0;row<floors;row++) for(let column=0;column<columns;column++) {
-    const x=Number((10+column*columnStep).toFixed(1));
-    const y=Number((12+row*rowStep).toFixed(1));
-    result+=`<g class="building-window"><rect class="window-frame" x="${x}" y="${y}" width="14" height="18" rx="1"/><rect class="window" x="${x+2}" y="${y+2}" width="10" height="13"/><path class="window-mullion" d="M${x+7} ${y+2}v13M${x+2} ${y+8.5}h10"/><path class="window-sill" d="M${x-1} ${y+19}h16"/></g>`;
-  }
-  return result;
-}
-function masonry(width,height) {
-  let result='';
-  for(let y=9,row=0;y<height-6;y+=14,row++) {
-    result+=`<path d="M3 ${y}H${width-3}"/>`;
-    for(let x=row%2?15:27;x<width-8;x+=28) result+=`<path d="M${x} ${y-4}v4"/>`;
-  }
-  return result;
-}
-function buildingDetail(kind,width,height,roof) {
-  if(kind==='atelier') return `<g class="rooftop-detail"><path class="solar-panel" d="M13-5l28-9h25l-28 9Z"/><path class="solar-grid" d="M24-9l25-8M34-12v7M48-16v7"/><rect class="roof-vent" x="${width-14}" y="-22" width="7" height="12"/><path class="roof-vent-cap" d="M${width-17}-22h13"/></g><path class="utility-line" d="M${width-7} 21v27m-4-13h8"/>`;
-  if(kind==='university') return `<g class="university-detail"><path class="pediment" d="M24 6L${width/2}-17L${width-24} 6Z" fill="${roof}"/><path class="pediment-trim" d="M20 7h${width-40}M31 10v42m23-42v42m24-42v42m23-42v42"/><circle class="clock-face" cx="${width/2}" cy="-1" r="8"/><path class="clock-hands" d="M${width/2}-6v6l4 2"/><path class="building-steps" d="M18 ${height+2}h${width-28}M13 ${height+7}h${width-18}M8 ${height+12}h${width-8}"/></g>`;
-  if(kind==='collective') return `<g class="collective-detail"><rect class="roof-planter" x="13" y="-10" width="30" height="8"/><path class="roof-greenery" d="M17-10q4-10 8 0q5-13 10 0q4-8 6 0"/><rect class="notice-board" x="9" y="${height-48}" width="28" height="17"/><path class="notice-paper" d="M13 ${height-44}h8v8h-8Zm11 0h9v4h-9Zm0 7h7"/><path class="entry-canopy" d="M${width-34} ${height-34}h29l5 6h-39Z"/></g>`;
-  if(kind==='cafe') return `<g class="cafe-detail"><path class="chimney" d="M49-7v-22h12v22"/><path class="chimney-cap" d="M46-29h18"/><rect class="storefront-frame" x="8" y="${height-39}" width="${width-40}" height="31"/><rect class="window storefront-window" x="11" y="${height-36}" width="${width-46}" height="25"/><path class="storefront-mullion" d="M${(width-19)/2} ${height-36}v25"/><path class="awning" d="M4 ${height-43}h${width-8}l7 11H-3Z"/><path class="awning-stripes" d="M15 ${height-43}l-2 11m17-11v11m16-11l2 11m14-11l5 11"/></g>`;
-  if(kind==='office') return `<g class="office-detail"><path class="floor-band" d="M4 37h${width-8}M4 66h${width-8}M4 94h${width-8}"/><g class="fire-escape"><path d="M${width-3} 25h20v72h-20m0-48h20m-20 24h20m-15-48v72m10-72v72M${width+1} 49l12 24m0-24L${width+1} 73"/><path d="M${width-6} 25h26m-26 24h26m-26 24h26"/></g><rect class="address-plaque" x="${width+2}" y="14" width="11" height="8"/><text class="address-number" x="${width+7.5}" y="20" text-anchor="middle">514</text></g>`;
-  if(kind==='shop') return `<g class="shop-detail"><rect class="storefront-frame" x="8" y="21" width="${width-36}" height="${height-27}"/><rect class="window storefront-window" x="11" y="24" width="${width-42}" height="${height-33}"/><path class="storefront-mullion" d="M${(width-20)/2} 24v${height-33}"/><path class="awning" d="M3 17h${width-6}l7 10H-4Z"/><path class="awning-stripes" d="M14 17l-2 10m17-10v10m16-10l3 10m13-10l5 10"/><rect class="planter" x="4" y="${height-7}" width="12" height="6"/><path class="planter-leaves" d="M7 ${height-7}q1-10 4 0q4-8 4 0"/></g>`;
-  return '';
-}
-function building(x,y,width,height,color,roof,name,floors=2,kind='standard') {
-  const depth=16;
-  const signY=kind==='shop'?4:kind==='cafe'?height-55:height-27;
-  const signWidth=kind==='shop'?width-16:Math.max(30,width-40);
-  return `<g class="building building--${kind}" transform="translate(${x} ${y})" filter="url(#shadow)"><ellipse class="building-shadow" cx="${(width+depth)/2}" cy="${height+5}" rx="${(width+26)/2}" ry="6"/><path class="building-side" d="M${width} 0l${depth}-12v${height}l-${depth} 12Z"/><path class="building-roof" d="M0 0l${depth}-12h${width}l-${depth} 12Z" fill="${roof}"/><rect class="building-front" width="${width}" height="${height}" fill="${color}"/><g class="masonry">${masonry(width,height)}</g>${windows(width,height,floors)}<path class="cornice" d="M1 5h${width-2}M1 ${height-5}h${width-2}"/><path class="downspout" d="M4 8v${height-13}h5"/><g class="building-entry"><rect class="door-frame" x="${width-27}" y="${height-29}" width="20" height="29"/><rect class="window door-glass" x="${width-24}" y="${height-25}" width="14" height="17"/><rect class="door-panel" x="${width-24}" y="${height-6}" width="14" height="4"/><rect class="door-handle" x="${width-12}" y="${height-14}" width="2" height="2"/><path class="door-step" d="M${width-30} ${height+2}h26"/></g><g class="building-sign"><rect x="7" y="${signY}" width="${signWidth}" height="12" rx="1"/><text x="12" y="${signY+9}" class="building-name">${escapeText(name)}</text></g>${buildingDetail(kind,width,height,roof)}</g>`;
-}
-function tree(x,y,scale=1) {return `<use href="#tree" x="${x}" y="${y}" width="${45*scale}" height="${65*scale}"/>`;}
-function scenePerson(x,y,color='#c8664d',scale=1) {
-  const phase=Math.abs(Math.round(x+y))%4;
-  return `<g class="scene-person person-phase-${phase}" transform="translate(${x} ${y}) scale(${scale})" color="${color}"><use class="scene-person-frame scene-person-frame-a" href="#pixel-person-a" width="18" height="34"/><use class="scene-person-frame scene-person-frame-b" href="#pixel-person-b" width="18" height="34"/></g>`;
-}
-function pixelPerson(x,y,color='#c8664d',scale=1,frame='a') {return `<use href="#pixel-person-${frame}" x="${x}" y="${y}" width="${18*scale}" height="${34*scale}" color="${color}"/>`;}
-function scene(index,markup) {return `<g class="scene-hotspot" role="button" tabindex="0" data-stop="${index}" aria-label="${escapeText(stops[index][language].name)}">${markup}</g>`;}
-
-const basketballPlayers=[
-  {x:38,y:16,scale:.72,color:'#608bab'},
-  {x:82,y:31,scale:.72,color:'#c8664d'}
-];
-const basketballBall={x:62,y:43,size:7,rise:14};
-
-function drawScenery() {
-  const courtPlayers=basketballPlayers.map(player=>scenePerson(player.x,player.y,player.color,player.scale)).join('');
-  const leisureScene=scene(5,`<ellipse class="scene-ground" cx="201" cy="116" rx="113" ry="53" fill="#d4dfc5"/>${tree(83,42,1.1)}${tree(310,40)}${tree(115,14,.7)}<g class="basketball-court" transform="translate(170 77) rotate(-12)"><rect width="116" height="64" rx="4" fill="#c7ac8a"/><rect x="3" y="3" width="110" height="58" rx="2" fill="none"/><path d="M58 3v58M3 32h110M3 17h15v30H3m110-30H98v30h15"/><circle cx="58" cy="32" r="12" fill="none"/><path d="M8 25V10h15M108 39v15H93"/><circle cx="8" cy="32" r="3" fill="none"/><circle cx="108" cy="32" r="3" fill="none"/>${courtPlayers}<rect class="ball-shadow" x="${basketballBall.x-2}" y="${basketballBall.y+7}" width="11" height="3"/><g class="basketball-ball-anchor" transform="translate(${basketballBall.x} ${basketballBall.y})"><g class="pixel-ball basketball-ball"><rect width="${basketballBall.size}" height="${basketballBall.size}" rx="1"/><path d="M3.5 0v7M0 3.5h7"/></g></g></g><g class="park-bench" transform="translate(127 135)"><path d="M0 0h28M3-5h22M3 0v12m22-12v12"/><path d="M1 4h26"/></g>${scenePerson(115,121,'#c8664d',.8)}`);
-  const projectsScene=scene(4,`<ellipse class="scene-ground" cx="568" cy="73" rx="83" ry="36" fill="#e3dfce"/>${building(490,10,83,65,'#afc0b0','#d7ddca','ATELIER',1,'atelier')}<g class="maker-bench" transform="translate(600 43)"><path d="M0 21h34M4 21v15m26-15v15"/><rect x="7" y="7" width="20" height="14" rx="1"/><path d="M10 10h14v8H10Zm-5 11h24"/><circle cx="31" cy="31" r="2"/></g>${tree(642,9,.8)}${scenePerson(580,64,'#608bab',.8)}`);
-  const learningScene=scene(3,`<ellipse class="scene-ground" cx="873" cy="170" rx="110" ry="42" fill="#dedfce"/>${building(774,83,132,88,'#d5c4a3','#e7dfc7','UNIVERSITÉ',2,'university')}${tree(947,109)}${scenePerson(839,179,'#608bab',.8)}${scenePerson(868,180,'#c8664d',.8)}<g class="bike-rack" transform="translate(913 177)"><path d="M0 8q0-12 8-12t8 12m6 0q0-12 8-12t8 12"/><path d="M-3 8h44"/></g>`);
-  const peopleScene=scene(1,`<ellipse class="scene-ground" cx="378" cy="280" rx="110" ry="36" fill="#dfe0d0"/>${building(287,192,117,85,'#c98f72','#e4c5a6','COLLECTIF',2,'collective')}<g class="community-table" transform="translate(315 270)"><ellipse cx="30" cy="8" rx="24" ry="7"/><path d="M30 14v13M10 27h40"/><circle cx="5" cy="17" r="4"/><circle cx="55" cy="17" r="4"/></g>${tree(442,225,.9)}${scenePerson(334,280,'#608bab',.8)}<g class="notice-stand" transform="translate(415 249)"><rect width="23" height="19" rx="1"/><path d="M5 5h13M5 10h9M5 15h11M5 19v13m13-13v13"/></g>`);
-  const experienceScene=scene(2,`<ellipse class="scene-ground" cx="701" cy="369" rx="161" ry="53" fill="#e0decd"/>${building(557,272,84,94,'#c8896d','#ddbea0','CAFÉ',2,'cafe')}<g class="pixel-smoke" aria-hidden="true"><rect x="609" y="242" width="5" height="5"/><rect x="603" y="231" width="4" height="4"/><rect x="610" y="220" width="5" height="5"/></g><g class="cafe-patio" transform="translate(658 385)"><ellipse cx="19" cy="8" rx="13" ry="6"/><path d="M19 14v15M7 29h24M2 8h-10m48 0h-10"/></g>${scenePerson(644,387,'#608bab',.72)}${scenePerson(692,389,'#c8664d',.72)}${building(732,244,76,121,'#b5bcb1','#d3d7c7','BUREAU',3,'office')}${tree(839,345,.8)}${tree(529,353,.7)}`);
-  const startScene=scene(0,`<ellipse class="scene-ground" cx="204" cy="430" rx="77" ry="32" fill="#e1dfce"/>${building(172,378,72,58,'#d8cfb8','#d3cbb5','BONJOUR',0,'shop')}<g class="metro-sign" transform="translate(143 392)"><path d="M0 0v49"/><rect x="-11" y="-11" width="22" height="22" rx="3"/><path d="M-6 4V-5l6 6 6-6v9"/></g>${tree(96,383,.8)}${scenePerson(226,435,'#c8664d',.86)}<g class="newspaper-box" transform="translate(258 420)"><rect width="15" height="21" rx="1"/><path d="M3 4h9v7H3Zm1 11h7m-7 3h8"/></g>`);
-  const cityDetails=`${tree(394,449,.8)}${tree(907,378)}${tree(965,418,.8)}${tree(97,260)}${tree(72,290,.8)}${tree(483,527,.8)}${tree(605,529,.6)}${tree(673,195,.7)}<g class="bridge" transform="translate(422 571)"><path d="M0 0h203l30 16H-30Z"/><path d="M0-6h203M3-6v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18m25-18v18"/></g><g class="sailboat" transform="translate(921 567)"><path d="M0 10h50l-9 12H12Z"/><path d="M25 10v-36l-24 33h24"/></g>`;
-  $('#scenery').innerHTML=leisureScene+projectsScene+learningScene+peopleScene+experienceScene+startScene+cityDetails;
-}
-
-function renderStations() {
-  $('#stations').innerHTML = stops.map((stop,index)=>{
-    const name=escapeText(stop[language].name),width=Math.max(95,name.length*7.4+35);
-    const labelX=index===1?-width-17:17;
-    const state=`${visited.has(index)?' active':''}${visited.has(index)&&selected===index?' current':''}`;
-    return `<g class="station${state}" role="button" tabindex="0" data-stop="${index}" aria-label="${name}" transform="translate(${stop.x} ${stop.y})"><g class="station-pixel-pulse" aria-hidden="true"><rect x="-8" y="-8" width="3" height="3"/><rect x="5" y="-8" width="3" height="3"/><rect x="-8" y="5" width="3" height="3"/><rect x="5" y="5" width="3" height="3"/></g><circle class="station-ring" r="10"/><circle r="3" fill="#c8664d"/><g class="station-copy"><rect class="label-bg" x="${labelX}" y="-13" width="${width}" height="27" rx="5"/><circle cx="${labelX+14}" cy="0" r="8" fill="#c8664d"/><text class="station-number" x="${labelX+14}" y="3" text-anchor="middle">${index+1}</text><text class="station-label" x="${labelX+28}" y="5">${name}</text></g></g>`;
-  }).join('');
-}
-
-function renderStory() {
-  const stop=stops[selected][language];
-  $('#story-tag').textContent=`${String(selected+1).padStart(2,'0')} / ${language==='en'?'PERSONAL NETWORK':'RÉSEAU PERSONNEL'}`;
-  $('#story-content').innerHTML=`<div class="story-number" aria-hidden="true">${String(selected+1).padStart(2,'0')}</div><h2 class="story-title" id="story-title">${escapeText(stop.title)}</h2><p class="story-lead">${escapeText(stop.lead)}</p><div class="story-chips">${stop.chips.map(chip=>`<span>${escapeText(chip)}</span>`).join('')}</div>${stop.cards.map(([meta,title,body])=>`<article class="story-card"><span class="story-meta">${escapeText(meta)}</span><h3>${escapeText(title)}</h3><p>${escapeText(body)}</p></article>`).join('')}<div class="story-links"><a href="assets/Liam-Hellman-CV-${language.toUpperCase()}.pdf" target="_blank" rel="noopener">${language==='en'?'Read my résumé':'Lire mon CV'} ↗</a><a href="mailto:liamhellman@gmail.com">${language==='en'?'Say hello':'Dire bonjour'} ↗</a><a href="https://www.linkedin.com/in/liam-hellman" target="_blank" rel="noopener">LinkedIn ↗</a></div>`;
-  $('#next').textContent=translations[language][tourActive?'tourNext':'next'];
-  $('#story').scrollTop=0;
-}
-
-function openStop(index) {
-  selected=(index+stops.length)%stops.length;
-  visited.add(selected);
-  renderStations();
-  renderStory();
-  if(!$('#story').open) $('#story').showModal();
-  updateControls();
-  $('#announcement').textContent=`${language==='en'?'Arrived at':'Arrivée à'} ${stops[selected][language].name}`;
-  $('#close-story').focus({preventScroll:true});
-}
-
-function translate() {
-  document.documentElement.lang=language;
-  document.title=language==='en'?'Liam Hellman — People, work & everything between':'Liam Hellman — L’humain, le travail et leurs liens';
-  document.querySelectorAll('[data-i18n]').forEach(element=>{
-    const key=element.dataset.i18n;
-    if(key==='headline') element.innerHTML=translations[language][key];
-    else element.textContent=translations[language][key];
-  });
-  $('#language').textContent=language==='en'?'FR':'EN';
-  $('#language').setAttribute('aria-label',language==='en'?'Passer au français':'Switch to English');
-  $('#cv-link').href=`assets/Liam-Hellman-CV-${language.toUpperCase()}.pdf`;
-  $('#close-story').setAttribute('aria-label',translations[language].close);
-  $('#city-title').textContent=language==='en'?'Liam’s Montréal':'Le Montréal de Liam';
-  $('#city-desc').textContent=language==='en'?'An illustrated city with six interactive metro stations, moving trains, and people. Select any station to explore its story.':'Une ville illustrée avec six stations de métro interactives, des trains et des passants. Sélectionnez une station pour explorer son histoire.';
-  $('#map-scroll').setAttribute('aria-label',language==='en'?'Interactive city map; scroll horizontally on small screens':'Carte interactive; défilement horizontal sur petit écran');
-  $('.header-links').setAttribute('aria-label',language==='en'?'Main navigation':'Navigation principale');
-  drawScenery();renderStations();updateControls();
-  if($('#story').open) renderStory();
-}
-
-function updateControls() {
-  $('#motion').textContent=translations[language][paused?'play':'pause'];
-  $('#motion').setAttribute('aria-pressed',String(paused));
-  document.body.classList.toggle('motion-paused',paused||document.hidden||$('#story').open);
-  $('#tour').firstElementChild.textContent=translations[language][tourActive?'endTour':'tour'];
-}
-
-const route = $('#main-route');
-const routeLength = route.getTotalLength();
-// Use the same SVG path for rendering and travel: trains stay on their tracks.
-const stationDistances = stops.map(stop=>{
-  let best=0,min=Infinity;
-  for(let d=0;d<=routeLength;d+=2){const p=route.getPointAtLength(d),distance=Math.hypot(p.x-stop.x,p.y-stop.y);if(distance<min){min=distance;best=d;}}
-  return best;
-});
-function createTrain(pathId,color,speed,offset){
-  const group=document.createElementNS(svgNS,'g');
-  group.classList.add('pixel-train');
-  const cars=[];
-  for(let i=0;i<3;i++){
-    const car=document.createElementNS(svgNS,'g');
-    car.classList.add('pixel-train-car');
-    car.innerHTML=`<path class="train-body" d="M-13-6H9v2h4V6H9v1h-22Z" fill="${color}"/><rect class="train-window" x="-9" y="-3" width="5" height="4"/><rect class="train-window" x="-2" y="-3" width="5" height="4"/><rect class="train-window" x="5" y="-3" width="4" height="4"/><rect class="train-glint train-glint-a" x="-8" y="-2" width="2" height="2"/><rect class="train-glint train-glint-b" x="-1" y="-2" width="2" height="2"/><rect class="train-door" x="5" y="2" width="4" height="4"/><rect class="train-light" x="10" y="-1" width="2" height="2"/><rect class="train-wheel" x="-9" y="6" width="4" height="2"/><rect class="train-wheel" x="4" y="6" width="4" height="2"/>`;
-    group.append(car);cars.push(car);
-  }
-  $('#trains').append(group);
-  const path=$(`#${pathId}`);
-  return {path,group,length:path.getTotalLength(),cars,speed,position:offset,direction:1,color,renderElapsed:0,frame:false};
-}
-const trains=[createTrain('main-route','#994a36',37,125),createTrain('blue-route','#3c6481',44,540),createTrain('green-route','#456b54',29,210)];
-const walkers=[];
-const walkingPaths=['M272 455L326 417','M924 244L970 286','M455 300L510 320','M606 427L674 433','M90 210L143 235','M753 558L815 531','M678 174L734 186','M80 525L126 500'];
-walkingPaths.forEach((d,index)=>{
-  const path=document.createElementNS(svgNS,'path');path.setAttribute('d',d);
-  const group=document.createElementNS(svgNS,'g');group.classList.add('pixel-walker');group.innerHTML=pixelPerson(-7,-22,index%2?'#658aaa':'#c87855',.7);$('#walkers').append(group);
-  walkers.push({path,group,sprite:group.querySelector('use'),length:path.getTotalLength(),position:index*7,speed:5+index%3,renderElapsed:index*.01,frame:false});
-});
-let journey=null;
-let lastTime=null;
-const trainFrameDuration=1/12;
-const walkerFrameDuration=1/8;
-function positionTrain(train) {
-  train.cars.forEach((car,index)=>{
-    const d=Math.max(0,Math.min(train.length,train.position-index*29*train.direction));
-    const p=train.path.getPointAtLength(d),p2=train.path.getPointAtLength(Math.min(train.length,d+1));
-    const p0=train.path.getPointAtLength(Math.max(0,d-1));
-    const angle=Math.atan2(p2.y-p0.y,p2.x-p0.x)*180/Math.PI+(train.direction<0?180:0);
-    car.setAttribute('transform',`translate(${Math.round(p.x)} ${Math.round(p.y)}) rotate(${Math.round(angle)})`);
-  });
-  train.frame=!train.frame;
-  train.group.classList.toggle('pixel-frame-b',train.frame);
-}
-function positionWalker(walker,advanceFrame=true) {
-  const d=walker.position<walker.length?walker.position:walker.length*2-walker.position;
-  const point=walker.path.getPointAtLength(d);
-  walker.group.setAttribute('transform',`translate(${Math.round(point.x)} ${Math.round(point.y)})`);
-  if(advanceFrame) walker.frame=!walker.frame;
-  walker.sprite.setAttribute('href',walker.frame?'#pixel-person-b':'#pixel-person-a');
-}
-function animate(timestamp) {
-  const dt=lastTime===null?0:Math.min((timestamp-lastTime)/1000,.05);lastTime=timestamp;
-  if(!paused&&!document.hidden&&!$('#story').open){
-    trains.forEach((train,index)=>{
-      train.renderElapsed+=dt;
-      if(index===0&&journey){
-        const diff=journey.target-train.position;
-        train.direction=diff>=0?1:-1;
-        train.position+=Math.sign(diff)*Math.min(Math.abs(diff),dt*journey.speed);
-        if(Math.abs(diff)<2){const destination=journey.index;train.position=journey.target;positionTrain(train);train.renderElapsed=0;journey=null;openStop(destination);}
-      } else {
-        train.position+=dt*train.speed*train.direction;
-        if(train.position>train.length-2){train.position=train.length-2;train.direction=-1;}
-        if(train.position<2){train.position=2;train.direction=1;}
-      }
-      if(train.renderElapsed>=trainFrameDuration){train.renderElapsed%=trainFrameDuration;positionTrain(train);}
-    });
-    walkers.forEach(walker=>{walker.position=(walker.position+dt*walker.speed)%(walker.length*2);walker.renderElapsed+=dt;if(walker.renderElapsed>=walkerFrameDuration){walker.renderElapsed%=walkerFrameDuration;positionWalker(walker);}});
-  }
-  requestAnimationFrame(animate);
-}
-function endTour() {tourActive=false;journey=null;clearTimeout(tourTimer);updateControls();}
-function travelTo(index) {
-  selected=(index+stops.length)%stops.length;
-  if($('#story').open) $('#story').close();
-  if(paused){openStop(selected);return;}
-  const target=stationDistances[selected],distance=Math.abs(target-trains[0].position);
-  journey={index:selected,target,speed:Math.max(150,distance/2.5)};
-  const scroll=$('#map-scroll');
-  const mapWidth=$('#city').getBoundingClientRect().width;
-  scroll.scrollTo({left:Math.max(0,stops[selected].x/1100*mapWidth-scroll.clientWidth/2),behavior:reducedMotion.matches?'instant':'smooth'});
-  $('#announcement').textContent=language==='en'?`Travelling to ${stops[selected].en.name}`:`En route vers ${stops[selected].fr.name}`;
-}
-document.addEventListener('click',event=>{const stop=event.target.closest('[data-stop]');if(stop){endTour();openStop(Number(stop.dataset.stop));}});
-$('#city').addEventListener('keydown',event=>{const stop=event.target.closest('[data-stop]');if(stop&&(event.key==='Enter'||event.key===' ')){event.preventDefault();endTour();openStop(Number(stop.dataset.stop));}});
-$('#language').addEventListener('click',()=>{language=language==='en'?'fr':'en';translate();});
-$('#motion').addEventListener('click',()=>{paused=!paused;if(paused&&journey){const destination=journey.index;journey=null;openStop(destination);}updateControls();});
-$('#close-story').addEventListener('click',()=>{endTour();$('#story').close();});
-$('#story').addEventListener('cancel',()=>endTour());
-$('#story').addEventListener('click',event=>{if(event.target===$('#story')){const r=$('#story').getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom){endTour();$('#story').close();}}});
-$('#story').addEventListener('close',()=>{updateControls();if(!journey){const station=$(`#stations [data-stop="${selected}"]`);station?.focus({preventScroll:true});}});
-$('#prev').addEventListener('click',()=>{if(tourActive)travelTo(selected-1);else openStop(selected-1);});
-$('#next').addEventListener('click',()=>{if(tourActive&&selected===stops.length-1){endTour();$('#story').close();}else if(tourActive)travelTo(selected+1);else openStop(selected+1);});
-$('#tour').addEventListener('click',()=>{if(tourActive){endTour();return;}tourActive=true;updateControls();travelTo(0);});
-reducedMotion.addEventListener('change',event=>{paused=event.matches;if(paused&&journey){const destination=journey.index;journey=null;openStop(destination);}updateControls();});
-document.addEventListener('visibilitychange',()=>{lastTime=null;updateControls();});
-$('#year').textContent=new Date().getFullYear();
-translate();
-trains.forEach(positionTrain);
-walkers.forEach(walker=>positionWalker(walker,false));
-requestAnimationFrame(animate);
+const canvas=$('#city'),ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+// Render at half resolution for a consistent two-pixel grid.
+const buffer=document.createElement('canvas');buffer.width=800;buffer.height=520;const c=buffer.getContext('2d');
+function poly(points,color){c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill()}
+function rect(x,y,w,h,color){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h)}
+function line(points,color,width=1){c.strokeStyle=color;c.lineWidth=width;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke()}
+let seed=4;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+function tree(x,y,s=1){rect(x-1,y-9,3,12,'#766344');const colors=['#b66a35','#d49548','#bc773d','#9d9c50'];const col=colors[Math.floor(rnd()*4)];poly([[x-10*s,y-17*s],[x-10*s,y-27*s],[x-5*s,y-27*s],[x-5*s,y-33*s],[x+4*s,y-33*s],[x+4*s,y-28*s],[x+10*s,y-28*s],[x+10*s,y-15*s],[x+5*s,y-11*s],[x-5*s,y-11*s]],col);rect(x-5*s,y-25*s,5*s,7*s,'#e6aa51')}
+function building(x,y,w,d,h,col,roof,name='',floors=3){poly([[x-5,y+4],[x+w,y+w/2+7],[x+w+d+13,y+(w-d)/2+7],[x+d,y-d/2]],'#53664d30');poly([[x,y-h],[x+w,y+w/2-h],[x+w,y+w/2],[x,y]],col);poly([[x+w,y+w/2-h],[x+w+d,y+(w-d)/2-h],[x+w+d,y+(w-d)/2],[x+w,y+w/2]],'#667568');poly([[x,y-h],[x+d,y-d/2-h],[x+w+d,y+(w-d)/2-h],[x+w,y+w/2-h]],roof);line([[x,y-h],[x+w,y+w/2-h],[x+w+d,y+(w-d)/2-h]],'#e3d9bf',2);
+ for(let f=0;f<floors;f++){for(let i=7;i<w-5;i+=13){const yy=y+i/2-h+13+f*16;if(yy+9<y+i/2-4){poly([[x+i,yy],[x+i+7,yy+3.5],[x+i+7,yy+12],[x+i,yy+8.5]],'#e4d8b8');poly([[x+i+1,yy+1],[x+i+6,yy+3.5],[x+i+6,yy+10],[x+i+1,yy+7.5]],'#3c5657');line([[x+i+3,yy+2],[x+i+3,yy+9]],'#adb6a3')}}for(let i=6;i<d-4;i+=12){const yy=y+w/2-i/2-h+12+f*16;if(yy+8<y+w/2-i/2-4)poly([[x+w+i,yy],[x+w+i+6,yy-3],[x+w+i+6,yy+6],[x+w+i,yy+9]],'#b6c2b0')}}
+ poly([[x+5,y-12],[x+13,y-8],[x+13,y+6.5],[x+5,y+2.5]],'#3d5246');if(name){c.save();c.translate(x+5,y-h+9);c.transform(1,.5,0,1,0,0);rect(-2,-6,w-5,9,'#efdfb9');c.fillStyle='#495748';c.font='bold 5px monospace';c.fillText(name,0,0,w-9);c.restore()}rect(x+d/2+7,y-d/4-h-5,9,6,'#8f9685');rect(x+d/2+9,y-d/4-h-7,7,3,'#b8bcaa')}
+function person(x,y,col){rect(x,y-10,3,3,'#d4a47c');rect(x-1,y-7,5,5,col);rect(x,y-2,1,3,'#354d48');rect(x+3,y-2,1,3,'#354d48')}
+function draw(t=0){seed=4;rect(0,0,800,520,'#dce3cb');
+// St Lawrence occupies the southeast; mountain and university sit inland.
+poly([[0,438],[150,405],[330,430],[470,394],[800,320],[800,520],[0,520]],'#8eafb0');for(let i=0;i<65;i++){let x=rnd()*800,y=410+rnd()*110;rect(x,y,8+rnd()*22,1,'#b3c8bd')}
+poly([[0,120],[180,35],[370,70],[475,168],[359,270],[154,264],[0,202]],'#b5c294');poly([[35,143],[175,62],[306,85],[375,147],[270,225],[117,211]],'#a7b987');
+// Broad streets with pavement borders.
+const roads=[[[70,245],[665,493]],[[185,140],[759,381]],[[353,68],[790,249]],[[102,395],[626,133]],[[270,466],[790,206]]];for(const p of roads){line(p,'#eee9d6',25);line(p,'#969d8d',17);line(p,'#e5d5a0',1)}
+for(let i=0;i<85;i++){const x=25+rnd()*355,y=50+rnd()*190;if(x+y<520)tree(x,y,.65+rnd()*.4)}
+// University pavilion, tower and mountain cross.
+building(202,129,53,29,44,'#c6b99c','#a7ac96','UDEM',2);building(235,130,15,15,90,'#d2c6a6','#8e9b8a','',5);rect(258,18,2,15,'#455c49');rect(253,22,12,2,'#455c49');
+// Neighbourhood blocks, depth sorted within each block.
+const blocks=[{x:435,y:100,n:4},{x:530,y:142,n:4},{x:342,y:240,n:3},{x:520,y:276,n:3},{x:160,y:305,n:3},{x:375,y:354,n:2}];const colors=['#c28c6c','#d4b48b','#b4b59a','#c89b7e','#d4c9a7'];for(const b of blocks)for(let i=0;i<b.n;i++)building(b.x+i*27,b.y+i*13.5,25,23,35+Math.floor(rnd()*3)*12,colors[Math.floor(rnd()*colors.length)],'#8c9684',i===0?(b.y===142?'ROSEMONT':b.y===354?'CAFÉ':'DÉPANNEUR'):'',3);
+// Downtown towers and old city's basilica.
+building(292,282,32,28,96,'#9aafa2','#8a9a8c','',5);building(335,303,25,24,120,'#c1baa0','#909d8a','',6);building(368,320,27,22,75,'#a5b5a3','#829783','',4);
+building(567,354,45,32,45,'#b8a484','#849d96','NOTRE-DAME',2);building(566,352,11,14,77,'#b4a58c','#688f8b','',4);building(601,369,11,14,77,'#b4a58c','#688f8b','',4);
+// Olympic stadium in the east, recognisable inclined tower.
+poly([[697,155],[714,145],[745,153],[760,169],[746,185],[719,187],[698,174]],'#eee7cd');poly([[706,159],[721,153],[743,160],[748,170],[731,179],[711,171]],'#8c9e83');poly([[749,163],[758,162],[775,100],[770,94],[758,119]],'#e5dfc8');line([[771,100],[724,158]],'#f4f0db');
+// Old port, clock tower and Jacques-Cartier-inspired bridge.
+building(665,358,8,8,50,'#eee3c6','#78978c','',3);rect(668,307,4,5,'#eee3c6');line([[649,401],[784,455]],'#dfdbc2',13);line([[649,394],[784,448]],'#737e6e',5);for(let i=0;i<3;i++){let x=675+i*35,y=401+i*14;line([[x,y],[x,y-40],[x+27,y-27],[x+27,y+11]],'#66867b',3);line([[x,y-40],[x+27,y+11],[x+27,y-27],[x,y]],'#99b19b',1)}
+// Orange metro line travels in clear street corridors.
+const route=[[220,354],[282,324],[417,392],[550,327],[620,292],[562,214],[418,150],[300,210],[246,187]];line(route,'#f4ead2',6);line(route,'#b95e3f',3);for(const [x,y] of [[220,354],[246,187],[562,214],[417,392],[550,327],[300,210]]){rect(x-3,y-3,6,6,'#f7edd3');rect(x-1,y-1,2,2,'#a85d3d')}
+// Small metro train stays on the route; foreground buildings are never its path.
+const segment=route[2],end=route[3],travel=paused?.35:(t*.00004)%1;
+const mx=segment[0]+(end[0]-segment[0])*travel,my=segment[1]+(end[1]-segment[1])*travel;
+poly([[mx-8,my-6],[mx+6,my-13],[mx+11,my-10],[mx-3,my-3]],'#eadcc0');
+line([[mx-6,my-5],[mx+8,my-12]],'#416e78',3);
+// Crosswalks, street life, benches. Animation is restricted to open roads.
+for(let i=0;i<5;i++)line([[468+i*4,343+i*1.7],[478+i*4,338+i*1.7]],'#f5ecd8',2);
+for(let i=0;i<25;i++){let x=130+rnd()*500,y=270+rnd()*140;person(x,y,['#b4673b','#3e6a65','#c5a854'][i%3])}
+for(const [x,y] of [[391,195],[128,279],[472,290],[649,277],[260,395],[600,405],[460,437]])tree(x,y,.9);
+// Moving cars remain in the painted road lanes, behind station labels.
+for(let i=0;i<5;i++){const u=((paused?i*.21:t*.000025+i*.21)%1);const x=80+u*570,y=245+u*238;poly([[x,y-4],[x+12,y+1],[x+18,y-2],[x+6,y-7]],i%2?'#c1a85e':'#466d68');poly([[x,y-4],[x+12,y+1],[x+12,y+6],[x,y+1]],i%2?'#b98a45':'#385954');rect(x+3,y+1,3,3,'#37443b');rect(x+12,y+4,3,3,'#37443b')}
+// Park path and tiny lookout.
+line([[132,206],[174,179],[208,190],[260,166]],'#e5d9b4',5);building(161,187,22,15,12,'#b3a182','#8d9274','',0);
+c.fillStyle='#617558';c.font='italic 10px Georgia';c.fillText('Mont Royal',77,79);c.font='italic 12px Georgia';c.fillStyle='#e1eee1';c.save();c.translate(328,476);c.rotate(-.13);c.fillText('Le Saint-Laurent',0,0);c.restore();ctx.clearRect(0,0,1600,1040);ctx.drawImage(buffer,0,0,1600,1040)}
+let last=0;function frame(t){if(!paused&&t-last>90){draw(t);last=t}requestAnimationFrame(frame)}draw();requestAnimationFrame(frame);
+const escape=s=>s.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function render(){document.documentElement.lang=lang;document.title=lang==='fr'?'Liam Hellman · Un parcours montréalais':'Liam Hellman · A Montréal journey';document.querySelectorAll('[data-t]').forEach(el=>el.innerHTML=copy[lang][el.dataset.t]);$('#language').textContent=lang==='fr'?'EN':'FR';$('#language').ariaLabel=lang==='fr'?'Switch to English':'Passer au français';$('#close').ariaLabel=lang==='fr'?'Fermer':'Close';$('#zoom-in').ariaLabel=lang==='fr'?'Zoom avant':'Zoom in';$('#zoom-out').ariaLabel=lang==='fr'?'Zoom arrière':'Zoom out';$('#motion').ariaLabel=lang==='fr'?'Activer ou arrêter les animations':'Toggle animations';$('#motion').ariaPressed=String(paused);$('#motion').textContent=paused?'▶':'Ⅱ';$('#viewport').ariaLabel=lang==='fr'?'Carte : glisser pour déplacer, boutons pour zoomer, flèches du clavier pour déplacer':'Map: drag to pan, use buttons to zoom, arrow keys to pan';$('#stops').innerHTML=stops.map((s,i)=>`<button class="stop ${visited.has(i)?'visited':''}" data-stop="${i}" style="left:${s.x}px;top:${s.y}px" aria-label="${i+1}. ${escape(s[lang][0])} — ${escape(s[lang][1])}"><b>${String(i+1).padStart(2,'0')}</b>${escape(s[lang][0])}</button>`).join('');$('#route-stops').innerHTML=stops.map((s,i)=>`<button data-stop="${i}" class="${visited.has(i)?'visited':''}"><b>${String(i+1).padStart(2,'0')}</b>${escape(s[lang][0])}</button>`).join('');$('#progress').textContent=`${visited.size} / 6`;if($('#story').open)renderStory()}
+function renderStory(){const s=stops[current][lang];$('#story-meta').textContent=`${String(current+1).padStart(2,'0')} · ${s[1]}`;$('#story-content').innerHTML=`<h2 id="story-title">${escape(s[2])}</h2><p class="lead">${escape(s[3])}</p><p>${s[4].map(t=>`<span class="tag">${escape(t)}</span>`).join('')}</p>${s[5].map((d,i)=>`<details ${i===0?'open':''}><summary><small>${escape(d[0])}</small>${escape(d[1])}</summary><p>${escape(d[2])}</p></details>`).join('')}<a class="story-contact" href="mailto:liamhellman@gmail.com">${copy[lang].contact}</a>`;$('#story-count').textContent=`${current+1} / 6`;$('#previous').disabled=current===0;$('#next').textContent=copy[lang][current===5?'finish':'next'];$('#story').scrollTop=0}
+function openStop(i){current=i;visited.add(i);$('#pepper').style.left=`${stops[i].x-25}px`;$('#pepper').style.top=`${stops[i].y+28}px`;render();renderStory();if(!$('#story').open)$('#story').showModal();$('#announce').textContent=stops[i][lang][0]}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-stop]');if(b)openStop(Number(b.dataset.stop))});$('#language').onclick=()=>{lang=lang==='fr'?'en':'fr';render()};$('#tour').onclick=()=>openStop(0);$('#close').onclick=()=>$('#story').close();$('#previous').onclick=()=>{if(current>0)openStop(current-1)};$('#next').onclick=()=>current===5?$('#story').close():openStop(current+1);$('#story').addEventListener('click',e=>{if(e.target===$('#story')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close()}});$('#motion').onclick=()=>{paused=!paused;$('#pepper').style.transition=paused?'none':'';render();draw(last)};matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{paused=e.matches;render();draw(last)});
+// Shared transform supports mouse, keyboard, touch pan and two-finger pinch.
+const viewport=$('#viewport'),world=$('#world');let scale=1,tx=0,ty=0;const pointers=new Map();let drag=null,pinched=false;
+function apply(){const w=viewport.clientWidth,h=viewport.clientHeight;tx=Math.min(80,Math.max(w-1600*scale-80,tx));ty=Math.min(80,Math.max(h-1040*scale-80,ty));world.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`}
+function reset(){scale=viewport.clientWidth<700?.65:Math.min(viewport.clientWidth/1600,viewport.clientHeight/1040);tx=(viewport.clientWidth-1600*scale)/2;ty=(viewport.clientHeight-1040*scale)/2;apply()}
+function zoom(f,x=viewport.clientWidth/2,y=viewport.clientHeight/2){const next=Math.max(.4,Math.min(2,scale*f));tx=x-(x-tx)*next/scale;ty=y-(y-ty)*next/scale;scale=next;apply()}
+viewport.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;viewport.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});drag={x:e.clientX,y:e.clientY};pinched=pointers.size>1;viewport.classList.add('dragging')});viewport.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;const old=[...pointers.values()];pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});const now=[...pointers.values()];if(now.length===2){const d=a=>Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);const r=viewport.getBoundingClientRect();if(d(old)>0)zoom(d(now)/d(old),(now[0].x+now[1].x)/2-r.left,(now[0].y+now[1].y)/2-r.top);pinched=true}else if(drag&&!pinched){tx+=e.clientX-drag.x;ty+=e.clientY-drag.y;apply()}drag={x:e.clientX,y:e.clientY}});function end(e){pointers.delete(e.pointerId);if(!pointers.size){drag=null;pinched=false;viewport.classList.remove('dragging')}}viewport.addEventListener('pointerup',end);viewport.addEventListener('pointercancel',end);viewport.addEventListener('keydown',e=>{if(e.target!==viewport)return;const delta={ArrowLeft:[45,0],ArrowRight:[-45,0],ArrowUp:[0,45],ArrowDown:[0,-45]}[e.key];if(delta){e.preventDefault();tx+=delta[0];ty+=delta[1];apply()}});$('#zoom-in').onclick=()=>zoom(1.2);$('#zoom-out').onclick=()=>zoom(1/1.2);$('#reset').onclick=reset;new ResizeObserver(reset).observe(viewport);render();reset();

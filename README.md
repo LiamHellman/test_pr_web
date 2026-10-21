@@ -1,54 +1,34 @@
-# Liam Hellman — A personal network
+# Liam Hellman — Un parcours montréalais
 
-A bilingual personal portfolio centered on industrial relations, set in an illustrated Montréal-inspired city. Built with dependency-free HTML, CSS, JavaScript, and SVG.
+French-first, bilingual personal portfolio: an autumn isometric pixel Montréal with six CV stops, a visitor-controlled tour, and Pepper the black cat. CV facts come from the three supplied résumés; landmarks are narrative anchors rather than exact employer locations. No downloadable résumé, phone number, or street address is displayed.
 
-## Explore
+## Run
 
-- Six stations: introduction, people and work, experience, education, projects, and personal interests.
-- A permanent deep-green Montréal map palette with the original cream editorial frame.
-- One shared two-frame pixel character system for both travelling and scene figures.
-- Three route-bound pixel metro trains plus stepped, GIF-inspired smoke, basketball, and station motion.
-- Six purpose-built architecture styles with consistent roofs, masonry, windows, doors, signage, and scene-specific details.
-- Opaque station labels and a dedicated occlusion mask keep motion behind buildings and away from readable text.
-- Guided train tour and animation pause control.
-- English/French content and downloadable résumés.
-- Keyboard-operable stations, native modal focus management, and automatic reduced-motion support.
-- Responsive layout with a horizontally scrollable city on small screens.
-
-## Run locally
-
-From the repository folder:
+From this checkout:
 
 ```sh
-python3 -m http.server 4173
+python3 -m http.server 4173 --bind 127.0.0.1
 ```
 
-Open `http://localhost:4173`. No install or build step is required.
+No installation or build is needed. HTML, CSS, JavaScript and a local Canvas renderer; no remote assets, APIs, or music. GitHub Pages can serve the root directly.
 
-Run the dependency-free animation-bound check with:
+## Use
+
+Choose a labelled stop or follow Pepper. Expand details within each story; Next and Previous advance the tour. Escape closes the dialog. Change French/English at the top. Drag to pan, pinch or use +/- to zoom, and use Recenter to restore the overview. Focus the map and use arrow keys to pan. Pause controls traffic and Pepper's movement; reduced-motion preferences are respected.
+
+## Validate
 
 ```sh
-node tests/pixel-bounds.mjs
-node tests/scene-cohesion.mjs
+node --check app.js
+node tests/portfolio.mjs
 ```
 
-## Publish on GitHub Pages
-
-In the repository, open **Settings → Pages**, choose **Deploy from a branch**, then choose **main** and **/ (root)**. Save. The default address will be `https://liamhellman.github.io/test_pr_web/` after deployment completes.
-
-All asset references are relative, so the site works at either a repository subpath or a custom domain. To use a custom domain, configure it in Pages settings and set the DNS records required by GitHub; do not add a CNAME file until the domain is configured.
+The browser smoke test needs Playwright available in the development environment and Chromium. It does not add runtime dependencies. Set `CHROMIUM_PATH` if Chromium is not at `/usr/bin/chromium`. Start the server first. The test checks the bilingual tour, all six stops, expandable content, no PDF links, zoom/reset, mobile overflow and browser errors. The old illustration-specific tests were replaced because the previous SVG scene was rebuilt with Canvas.
 
 ## Edit
 
-- `app.js`: bilingual copy, station coordinates, illustrations, and train behavior.
-- `style.css`: layout, colours, responsive styles, and reduced-motion behavior.
-- `index.html`: page structure, metadata, and content security policy.
-- `assets/`: original supplied English/French résumé PDFs and favicon.
+- `app.js`: bilingual CV content, pixel drawing, tour, map interaction.
+- `style.css`: responsive frame, controls, story panels and Pepper sprite.
+- `index.html`: accessible document structure.
 
-The résumé downloads include the contact information in the supplied originals. Copy presents industrial relations topics as interests, rather than claiming professional HR experience. No academic papers or unverified project links are included.
-
-## Security and privacy
-
-No backend, dependencies, network API calls, contact form, analytics, cookies, or browser storage. Content security policy allows local scripts and styles and blocks connections, embedded objects, and form submissions. The repository and site contain no credentials. A static site still depends on the security of its hosting and repository access; no software can guarantee zero vulnerabilities.
-
-GitHub Pages does not support custom response headers. For a host that does, set a CSP response header (including `frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, and `Referrer-Policy: strict-origin-when-cross-origin`. The document's CSP meta tag cannot restrict framing.
+Map geography is deliberately approximate. Artwork is procedurally drawn in a consistent pixel grid, inspired by the supplied reference; it is not a reproduction. PDF files retained in `assets/` are not linked by the interface.
