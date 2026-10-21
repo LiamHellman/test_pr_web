@@ -339,17 +339,29 @@ const stops = [
     ],
   },
 ];
-// The illustrated city is a local asset. Animated details have explicit safe
-// regions and never travel through the architecture.
-const pepperPlaces = [
-  { x: 735, y: 805 },
-  { x: 270, y: 315 },
-  { x: 1130, y: 435 },
-  { x: 450, y: 855 },
-  { x: 1190, y: 870 },
-  { x: 410, y: 91 },
-];
+// Scene coordinates, buildings and character paths share the same world.
+const scene = window.MontrealScene;
+function updateCityStatus() {
+  const walking = scene.status().walking;
+  $("#city-status").textContent = walking
+    ? lang === "fr"
+      ? "Pepper vous rejoint par les trottoirs…"
+      : "Pepper is following the sidewalks…"
+    : visited.size
+      ? lang === "fr"
+        ? "Pepper est arrivé · Explorez un bâtiment"
+        : "Pepper has arrived · Explore a building"
+      : copy[lang].hint;
+}
+const locations = scene.init($("#city"), {
+  onStop: openStop,
+  onPepperArrival: updateCityStatus,
+});
+locations.forEach((place, i) =>
+  Object.assign(stops[i], { x: place.x, y: place.y }),
+);
 function draw() {
+  scene.setPaused(paused);
   document.body.classList.toggle("motion-paused", paused);
 }
 draw();
@@ -370,10 +382,7 @@ function render() {
   document
     .querySelectorAll("[data-t]")
     .forEach((el) => (el.innerHTML = copy[lang][el.dataset.t]));
-  $("#city").alt =
-    lang === "fr"
-      ? "Montréal miniature en automne : mont Royal, Université de Montréal, triplex, centre-ville et Vieux-Port."
-      : "Miniature autumn Montréal: Mount Royal, Université de Montréal, triplexes, downtown and the Old Port.";
+  scene.setLanguage(lang);
   $("#language").textContent = lang === "fr" ? "EN" : "FR";
   $("#language").ariaLabel =
     lang === "fr" ? "Switch to English" : "Passer au français";
@@ -403,6 +412,7 @@ function render() {
   $("#progress").textContent = `${visited.size} / 6`;
   if ($("#story").open) renderStory();
   positionPins();
+  updateCityStatus();
 }
 function renderStory() {
   const s = stops[current][lang];
@@ -420,8 +430,7 @@ function openStop(i) {
   if (!$("#story").open) returnFocus = document.activeElement;
   current = i;
   visited.add(i);
-  $("#pepper").style.left = `${pepperPlaces[i].x}px`;
-  $("#pepper").style.top = `${pepperPlaces[i].y}px`;
+  scene.goTo(i);
   focusStop(i);
   render();
   renderStory();
@@ -457,7 +466,7 @@ $("#story").addEventListener("click", (e) => {
 });
 $("#motion").onclick = () => {
   paused = !paused;
-  $("#pepper").style.transition = paused ? "none" : "";
+
   render();
   draw();
 };
@@ -528,7 +537,7 @@ function zoom(f, x = viewport.clientWidth / 2, y = viewport.clientHeight / 2) {
   apply();
 }
 viewport.addEventListener("pointerdown", (e) => {
-  if (e.target.closest("button")) return;
+  if (e.target.closest("button, [data-stop]")) return;
   viewport.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   drag = { x: e.clientX, y: e.clientY };
@@ -588,8 +597,6 @@ $("#reset").onclick = reset;
 new ResizeObserver(reset).observe(viewport);
 render();
 reset();
-$("#pepper").style.left = `${pepperPlaces[0].x}px`;
-$("#pepper").style.top = `${pepperPlaces[0].y}px`;
 
 $("#story").addEventListener("close", () => {
   const target = returnFocus?.dataset?.stop;

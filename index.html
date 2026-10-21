@@ -11,6 +11,7 @@
     <title>Liam Hellman · Un parcours montréalais</title>
     <link rel="icon" href="assets/favicon.svg" />
     <link rel="stylesheet" href="style.css" />
+    <script src="scene.js" defer></script>
     <script src="app.js" defer></script>
   </head>
   <body>
@@ -64,39 +65,15 @@
           aria-label="Carte : glisser pour déplacer, boutons pour zoomer, flèches du clavier pour déplacer"
         >
           <div id="world">
-            <img
+            <svg
               id="city"
-              src="assets/montreal-autumn.png"
+              viewBox="0 0 1600 1040"
               width="1600"
               height="1040"
-              alt="Montréal miniature en automne : mont Royal, Université de Montréal, triplex, centre-ville et Vieux-Port."
-              draggable="false"
-            />
-            <div class="river-sparkles" aria-hidden="true">
-              <i></i><i></i><i></i>
-            </div>
-            <div class="ferry-lane" aria-hidden="true">
-              <div class="ferry">
-                <svg
-                  viewBox="0 0 52 28"
-                  width="52"
-                  height="28"
-                  shape-rendering="crispEdges"
-                >
-                  <path d="M0 22h24v2H0zM5 26h15v2H5z" fill="#b9d9ce" />
-                  <path d="M12 15h38v5H18v-2h-6z" fill="#f4e6c5" />
-                  <path d="M18 20h27v3H22v-1h-4z" fill="#b45035" />
-                  <path d="M20 7h20v8H20zM25 3h9v4h-9z" fill="#f7eedc" />
-                  <path
-                    d="M23 9h4v4h-4zM30 9h4v4h-4zM37 9h3v4h-3z"
-                    fill="#335b63"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div id="pepper" aria-label="Pepper, votre compagnon">
-              <span class="cat"><i></i></span><span>Pepper</span>
-            </div>
+              role="group"
+              aria-labelledby="scene-title scene-description"
+              shape-rendering="crispEdges"
+            ></svg>
           </div>
           <div id="stops"></div>
           <div class="map-caption" aria-hidden="true">
@@ -104,7 +81,9 @@
           </div>
         </div>
         <div class="map-bottom">
-          <span data-t="hint">Glissez pour explorer · Choisissez un arrêt</span>
+          <span id="city-status" data-t="hint"
+            >Glissez pour explorer · Choisissez un arrêt</span
+          >
           <div class="controls">
             <button
               id="motion"

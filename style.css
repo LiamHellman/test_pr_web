@@ -310,119 +310,6 @@ h1 em {
   padding: 0 12px;
   font-size: 10px;
 }
-#pepper {
-  position: absolute;
-  left: 455px;
-  top: 720px;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 2;
-}
-#pepper > span:last-child {
-  background: #fff8e6;
-  color: #263e32;
-  font: bold 10px monospace;
-  padding: 3px 5px;
-  border-radius: 3px;
-}
-#pepper .cat {
-  display: block;
-  position: relative;
-  width: 30px;
-  height: 28px;
-  background: linear-gradient(
-      90deg,
-      transparent 0 4px,
-      #202a28 4px 24px,
-      transparent 24px
-    )
-    0 12px/30px 10px no-repeat;
-  animation: cat-idle 1.4s steps(2, end) infinite;
-}
-#pepper .cat::before {
-  content: "";
-  position: absolute;
-  left: 10px;
-  top: 4px;
-  width: 15px;
-  height: 13px;
-  background: #202a28;
-  box-shadow:
-    -2px -4px 0 -1px #202a28,
-    8px -4px 0 -1px #202a28;
-}
-#pepper .cat::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 6px;
-  width: 4px;
-  height: 12px;
-  background: #202a28;
-  box-shadow:
-    5px 15px #202a28,
-    19px 15px #202a28;
-}
-#pepper .cat i {
-  position: absolute;
-  z-index: 1;
-  left: 13px;
-  top: 8px;
-  width: 3px;
-  height: 2px;
-  background: #e3bf5a;
-  box-shadow: 6px 0 #e3bf5a;
-}
-@keyframes cat-idle {
-  50% {
-    transform: translateY(-2px);
-  }
-}
-.river-sparkles {
-  position: absolute;
-  left: 0;
-  top: 91%;
-  width: 70%;
-  height: 7%;
-  pointer-events: none;
-  overflow: hidden;
-}
-.river-sparkles i {
-  position: absolute;
-  left: 20%;
-  top: 30%;
-  width: 28px;
-  height: 2px;
-  background: #f6e6b0;
-  opacity: 0;
-  animation: glint 4s steps(4, end) infinite;
-}
-.river-sparkles i:nth-child(2) {
-  left: 48%;
-  top: 65%;
-  animation-delay: -1.2s;
-}
-.river-sparkles i:nth-child(3) {
-  left: 75%;
-  top: 15%;
-  animation-delay: -2.4s;
-}
-@keyframes glint {
-  30% {
-    opacity: 0.55;
-    transform: scaleX(0.5);
-  }
-  65% {
-    opacity: 0;
-    transform: scaleX(1);
-  }
-}
-.motion-paused #world *,
-.motion-paused #world *::before {
-  animation-play-state: paused !important;
-}
 .route {
   padding: 23px 0 28px;
 }
@@ -837,34 +724,80 @@ details p {
     min-height: 0;
   }
 }
-/* A single boat has a separate lane wholly inside the open lower river. */
-.ferry-lane {
-  position: absolute;
-  left: 3%;
-  top: 96.5%;
-  width: 46%;
-  height: 30px;
-  overflow: hidden;
+/* All city artwork and actors now live in the same isometric SVG scene. */
+#city {
+  pointer-events: auto;
+  image-rendering: auto;
+}
+.city-object {
+  transition: none;
+}
+.city-object.landmark {
+  cursor: pointer;
+}
+.city-object.landmark:hover,
+.city-object.landmark:focus-visible {
+  filter: brightness(1.12);
+  outline: none;
+}
+.city-object.landmark:focus-visible {
+  filter: drop-shadow(0 0 3px #f1be64);
+}
+#pepper {
+  position: static;
+  display: inline;
   pointer-events: none;
 }
-.ferry {
+#viewport {
+  background: #b5c4a2;
+}
+#world .city-actor {
+  pointer-events: none;
+}
+#viewport::after {
+  content: "N ↗";
   position: absolute;
-  top: 0;
-  left: 30%;
-  width: 52px;
-  height: 28px;
-  animation: ferry-crossing 24s linear infinite;
+  right: 20px;
+  top: 20px;
+  font: 12px monospace;
+  color: #476c63;
+  border: 1px solid #476c6350;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
 }
-@keyframes ferry-crossing {
-  from {
-    left: -60px;
-  }
-  to {
-    left: 100%;
-  }
+/* Numbers mark entrances; names appear on intent instead of hiding façades. */
+.stop {
+  width: 34px;
+  height: 34px;
+  padding: 3px;
+  border-radius: 6px;
+  justify-content: center;
 }
-@media (prefers-reduced-motion: reduce) {
-  .ferry {
-    animation: none;
-  }
+.stop b {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+}
+.stop > span {
+  display: block;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  background: #fff9ec;
+  color: #254538;
+  border: 1px solid #a9b59e;
+  padding: 8px 11px;
+  border-radius: 5px;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 2px 8px #28433224;
+}
+.stop:hover > span,
+.stop:focus-visible > span {
+  opacity: 1;
 }

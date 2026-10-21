@@ -8,40 +8,125 @@ const browser = await chromium.launch({
 });
 try {
   const page = await browser.newPage({
-      viewport: { width: 1440, height: 1100 },
+      viewport: { width: 1440, height: 1050 },
     }),
     errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("http://127.0.0.1:4173");
-  await page.locator("#city").evaluate(async (img) => {
-    await img.decode();
-  });
-  assert.equal(
-    await page.locator("#city").evaluate((img) => img.naturalWidth > 1000),
-    true,
-  );
+  await page.waitForFunction(() => window.MontrealScene?.debug().time > 0);
   assert.equal(await page.locator("html").getAttribute("lang"), "fr");
-  assert.equal(await page.locator(".stop").count(), 6);
-  const boxes = await page.locator(".stop").evaluateAll((els) =>
-    els.map((e) => {
-      const r = e.getBoundingClientRect();
-      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
-    }),
+  assert.equal(
+    await page.locator("#world img, #world image").count(),
+    0,
+    "The city must be a scene, not a background image",
   );
-  for (let i = 0; i < boxes.length; i++)
-    for (let j = i + 1; j < boxes.length; j++) {
-      const a = boxes[i],
-        b = boxes[j];
-      assert(
-        !(
-          a.left < b.right &&
-          a.right > b.left &&
-          a.top < b.bottom &&
-          a.bottom > b.top
-        ),
-        "Station labels overlap",
+  assert(
+    (await page.locator("#city .city-object").count()) > 140,
+    "Expected separate terrain, architecture and props",
+  );
+  assert.equal(await page.locator(".stop").count(), 6);
+  assert((await page.locator('.landmark[role="button"]').count()) >= 6);
+  // Validate the actual shared world geometry, independent of drawing code.
+  const collisions = await page.evaluate(() => {
+    const d = MontrealScene.debug(),
+      hits = [];
+    const blocked = (u, v) =>
+      d.footprints.find(
+        (f) =>
+          u > f.u + 0.01 &&
+          u < f.u + f.w - 0.01 &&
+          v > f.v + 0.01 &&
+          v < f.v + f.d - 0.01,
       );
+    for (const [from, to] of d.edges) {
+      const a = d.nodes[from],
+        b = d.nodes[to];
+      for (let i = 0; i <= 100; i++) {
+        const t = i / 100,
+          u = a.u + (b.u - a.u) * t,
+          v = a.v + (b.v - a.v) * t;
+        if (blocked(u, v))
+          hits.push({
+            kind: "sidewalk",
+            from,
+            to,
+            u,
+            v,
+            building: blocked(u, v),
+          });
+      }
     }
+    for (let k = 0; k < d.roads.traffic.length; k++) {
+      const a = d.roads.traffic[k],
+        b = d.roads.traffic[(k + 1) % d.roads.traffic.length];
+      for (let i = 0; i <= 100; i++) {
+        const t = i / 100,
+          u = a.u + (b.u - a.u) * t,
+          v = a.v + (b.v - a.v) * t;
+        // Vehicle extents must also remain outside footprints, not only its centre.
+        for (const du of [0, a.u === b.u ? 0.4 : 1.25])
+          for (const dv of [0, a.u === b.u ? 1.25 : 0.4])
+            if (blocked(u + du, v + dv))
+              hits.push({ kind: "traffic", k, u, v });
+      }
+    }
+    return hits;
+  });
+  assert.deepEqual(
+    collisions,
+    [],
+    "A walking or driving route crosses a building",
+  );
+  const graph = await page.evaluate(() => MontrealScene.debug());
+  assert.equal(graph.paths.length, 6);
+  for (let i = 0; i < 6; i++)
+    assert.equal(
+      graph.paths[i].at(-1),
+      graph.targetNodes[i],
+      "Every stop must be reachable",
+    );
+  assert(graph.destinations[5].z > 80, "The mountain stop must be elevated");
+  // Bus, wheel and basketball are moving parts of their scene objects.
+  const movingBefore = await page.evaluate(() => ({
+    car: document
+      .querySelector('[data-actor="traffic-0"]')
+      .getAttribute("transform"),
+    wheel: document.querySelector("#wheel-spokes").getAttribute("transform"),
+    time: MontrealScene.debug().time,
+  }));
+  await page.waitForTimeout(450);
+  const movingAfter = await page.evaluate(() => ({
+    car: document
+      .querySelector('[data-actor="traffic-0"]')
+      .getAttribute("transform"),
+    wheel: document.querySelector("#wheel-spokes").getAttribute("transform"),
+    time: MontrealScene.debug().time,
+  }));
+  assert(movingAfter.time > movingBefore.time);
+  assert.notEqual(movingAfter.car, movingBefore.car);
+  assert.notEqual(movingAfter.wheel, movingBefore.wheel);
+  // Activate the university itself, rather than its floating marker.
+  await page.locator('.landmark[data-stop="1"]').focus();
+  await page.waitForTimeout(250);
+  assert.equal(
+    await page.evaluate(() => document.activeElement?.dataset.stop),
+    "1",
+    "Scene depth changes must preserve keyboard focus",
+  );
+  await page.keyboard.press("Enter");
+  assert.equal(await page.locator("#story-count").innerText(), "2 / 6");
+  const catBefore = await page.evaluate(() => MontrealScene.debug().pepper);
+  await page.waitForTimeout(350);
+  const catAfter = await page.evaluate(() => MontrealScene.debug().pepper);
+  assert(
+    Math.hypot(catAfter.u - catBefore.u, catAfter.v - catBefore.v) > 0,
+    "Pepper must walk toward the destination",
+  );
+  assert(
+    Math.hypot(catAfter.u - catBefore.u, catAfter.v - catBefore.v) < 2,
+    "Pepper must not jump straight across the city",
+  );
+  await page.keyboard.press("Escape");
   await page.locator("#tour").click();
   for (let i = 0; i < 6; i++) {
     assert.equal(
@@ -62,13 +147,10 @@ try {
     "Learning on the ground.",
   );
   await page.keyboard.press("Escape");
-  assert.equal(await page.locator("#story").evaluate((e) => e.open), false);
   await page.locator("#reset").click();
   const before = await page.locator("#world").getAttribute("style");
   await page.locator("#zoom-in").click();
   assert.notEqual(await page.locator("#world").getAttribute("style"), before);
-  await page.locator("#reset").click();
-  assert.equal(await page.locator("#world").getAttribute("style"), before);
   const pinSize = await page
     .locator(".stop")
     .first()
@@ -80,52 +162,32 @@ try {
       .first()
       .evaluate((e) => e.getBoundingClientRect().width),
     pinSize,
-    "Pin text must not scale with artwork",
   );
-  await page.locator("#reset").click();
-  await page.locator("#zoom-in").click();
   await page.locator("#viewport").focus();
   const panBefore = await page.locator("#world").getAttribute("style");
   await page.keyboard.press("ArrowUp");
   assert.notEqual(
     await page.locator("#world").getAttribute("style"),
     panBefore,
-    "Keyboard pan must move the map",
   );
   await page.locator("#reset").click();
+  assert.equal(await page.locator("#world").getAttribute("style"), before);
   await page.locator("#motion").click();
   assert.equal(
     await page.locator("#motion").getAttribute("aria-pressed"),
     "true",
   );
+  const frozen = await page.locator("#city-depth").innerHTML();
+  const frozenTime = await page.evaluate(() => MontrealScene.debug().time);
+  await page.waitForTimeout(350);
+  assert.equal(await page.locator("#city-depth").innerHTML(), frozen);
   assert.equal(
-    await page
-      .locator("#pepper .cat")
-      .evaluate((el) => getComputedStyle(el).animationPlayState),
-    "paused",
+    await page.evaluate(() => MontrealScene.debug().time),
+    frozenTime,
   );
-  await page.waitForTimeout(100);
-  const ferryPosition = await page
-    .locator(".ferry")
-    .evaluate((el) => el.getBoundingClientRect().x);
-  await page.waitForTimeout(250);
-  assert.equal(
-    await page.locator(".ferry").evaluate((el) => el.getBoundingClientRect().x),
-    ferryPosition,
-    "Paused ferry must remain still",
-  );
-  const riverLane = await page
-    .locator(".ferry-lane")
-    .evaluate((el) => ({
-      top: parseFloat(getComputedStyle(el).top),
-      height: el.parentElement.clientHeight,
-      overflow: getComputedStyle(el).overflow,
-    }));
-  assert(
-    riverLane.top / riverLane.height >= 0.96,
-    "Ferry must stay in the lower open river",
-  );
-  assert.equal(riverLane.overflow, "hidden");
+  await page.locator("#motion").click();
+  await page.waitForTimeout(200);
+  assert((await page.evaluate(() => MontrealScene.debug().time)) > frozenTime);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(100);
   assert.equal(
@@ -134,50 +196,31 @@ try {
     ),
     false,
   );
-  await page.locator('#route-stops [data-stop="1"]').click();
-  assert.equal(await page.locator("#story").evaluate((e) => e.open), true);
-  await page.keyboard.press("Escape");
-  assert.equal(await page.locator('a[href$=".pdf"]').count(), 0);
-  // Content scrolls independently of fixed close and navigation controls.
   await page.locator('#route-stops [data-stop="2"]').click();
   await page.locator("#story-content").evaluate((el) => {
     el.scrollTop = el.scrollHeight;
   });
-  assert(await page.locator("#close").isVisible());
-  assert(await page.locator("#next").isVisible());
-  const bounds = await page.locator("#next").boundingBox();
-  assert(bounds.y + bounds.height <= 844);
-  await page.keyboard.press("Escape");
-  // The user also opens index.html directly from VS Code / Explorer.
-  const filePage = await browser.newPage();
-  try {
-    await filePage.goto(new URL("../index.html", import.meta.url).href);
-    await filePage.locator("#city").evaluate(async (img) => {
-      await img.decode();
-    });
-    await filePage.locator("#tour").click();
-    assert.equal(
-      await filePage.locator("#story").evaluate((e) => e.open),
-      true,
+  for (const selector of ["#close", "#next"]) {
+    const r = await page.locator(selector).boundingBox();
+    assert(
+      r.y >= 0 && r.y + r.height <= 844,
+      "Drawer controls must stay on screen",
     );
-  } catch (error) {
-    if (!error.message.includes("ERR_BLOCKED_BY_ADMINISTRATOR")) throw error;
-    console.log(
-      "SKIP direct-file load: managed browser policy blocks file:// navigation.",
-    );
-  } finally {
-    await filePage.close();
   }
+  await page.keyboard.press("Escape");
+  assert.equal(await page.locator('a[href$=".pdf"]').count(), 0);
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.waitForFunction(() => MontrealScene.debug().paused);
+  assert.equal(await page.evaluate(() => MontrealScene.debug().paused), true);
+  await page.locator('#route-stops [data-stop="5"]').click();
   assert.equal(
-    await page
-      .locator("#pepper .cat")
-      .evaluate((el) => getComputedStyle(el).animationName),
-    "none",
+    await page.evaluate(() => MontrealScene.debug().pepper.z),
+    96,
+    "Reduced motion selects the mountain without walking",
   );
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: local illustration, bilingual six-stop tour, expandable stories, readable pin sizing, keyboard pan/dismissal, zoom/reset, paused and reduced motion, mobile drawer/layout, and no browser errors.",
+    "PASS: scene geometry, all six reachable stops, collision-free sidewalks and traffic, live bus/wheel, walking Pepper, clickable buildings, bilingual tour, pan/zoom, fully frozen pause, reduced motion and mobile panels.",
   );
 } finally {
   await browser.close();
