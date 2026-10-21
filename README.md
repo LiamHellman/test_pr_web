@@ -1,34 +1,42 @@
 # Liam Hellman — Un parcours montréalais
 
-French-first, bilingual personal portfolio: an autumn isometric pixel Montréal with six CV stops, a visitor-controlled tour, and Pepper the black cat. CV facts come from the three supplied résumés; landmarks are narrative anchors rather than exact employer locations. No downloadable résumé, phone number, or street address is displayed.
+French-first bilingual portfolio with a Montréal autumn pixel-art map, six HR-focused CV stops and Pepper the black cat. CV facts come from Liam's three supplied résumés. Landmarks are narrative anchors rather than employer addresses.
 
 ## Run
 
-From this checkout:
+Open `index.html` directly, or serve the checkout:
 
 ```sh
 python3 -m http.server 4173 --bind 127.0.0.1
 ```
 
-No installation or build is needed. HTML, CSS, JavaScript and a local Canvas renderer; no remote assets, APIs, or music. GitHub Pages can serve the root directly.
+No installation or build is required. All site assets are local. No backend, APIs, music, remote fonts or runtime dependencies.
 
-## Use
+## Explore
 
-Choose a labelled stop or follow Pepper. Expand details within each story; Next and Previous advance the tour. Escape closes the dialog. Change French/English at the top. Drag to pan, pinch or use +/- to zoom, and use Recenter to restore the overview. Focus the map and use arrow keys to pan. Pause controls traffic and Pepper's movement; reduced-motion preferences are respected.
+Choose a numbered marker or a stop in the itinerary. Each opens a story drawer with expandable details and Previous / Next controls. The close button and navigation stay visible while content scrolls. Escape closes the drawer. The language button switches French and English.
+
+Drag to pan; pinch or use +/- to zoom. Focus the map and use arrow keys to pan. Recenter restores the initial view. Map markers keep a consistent screen size as the artwork zooms. On phones, markers show their numbers; the itinerary underneath supplies the names.
+
+Animation is intentionally contained: Pepper idles in place, water glints are clipped to the river, and one ferry follows a separate lane entirely inside the lower river. Pepper relocates between destinations without tweening through architecture. Pause and reduced-motion preferences stop animation. The old procedural traffic paths and line across rooftops were removed.
 
 ## Validate
+
+With the server running:
 
 ```sh
 node --check app.js
 node tests/portfolio.mjs
 ```
 
-The browser smoke test needs Playwright available in the development environment and Chromium. It does not add runtime dependencies. Set `CHROMIUM_PATH` if Chromium is not at `/usr/bin/chromium`. Start the server first. The test checks the bilingual tour, all six stops, expandable content, no PDF links, zoom/reset, mobile overflow and browser errors. The old illustration-specific tests were replaced because the previous SVG scene was rebuilt with Canvas.
+The smoke test uses development-environment Playwright and Chromium. Set `CHROMIUM_PATH` if Chromium is not at `/usr/bin/chromium`. Tests cover asset decoding, the bilingual six-stop tour, expandable details, label spacing and sizing, keyboard dismissal, zoom/reset, pause, mobile overflow, fixed drawer controls, and attempts direct `file://` use (reported as skipped when managed-browser policy blocks local file navigation). Visual review is still necessary; passing interaction tests alone does not establish art quality or animation coherence.
 
-## Edit
+## Files
 
-- `app.js`: bilingual CV content, pixel drawing, tour, map interaction.
-- `style.css`: responsive frame, controls, story panels and Pepper sprite.
-- `index.html`: accessible document structure.
+- `app.js`: bilingual CV content, story navigation, pan and zoom.
+- `style.css`: page layout, map pins, panels and contained animation.
+- `index.html`: document structure and local illustration.
+- `assets/montreal-autumn.png`: dedicated illustrated city scene.
+- `ASSET_CREDITS.md`: artwork provenance.
 
-Map geography is deliberately approximate. Artwork is procedurally drawn in a consistent pixel grid, inspired by the supplied reference; it is not a reproduction. PDF files retained in `assets/` are not linked by the interface.
+The PDFs retained in `assets/` are not linked in the interface. No phone number or street address is displayed.

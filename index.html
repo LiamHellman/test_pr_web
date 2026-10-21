@@ -1,3 +1,153 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#eeeadd"><meta name="description" content="Le parcours de Liam Hellman, relations industrielles et informatique, à travers un Montréal miniature."><title>Liam Hellman · Un parcours montréalais</title><link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
-<body><a class="skip" href="#tour">Explorer mon parcours</a><header><a class="brand" href="./">LH<span>Liam Hellman<small data-t="brand">Humain. Travail. Montréal.</small></span></a><nav><a href="mailto:liamhellman@gmail.com" data-t="contact">Dire bonjour ↗</a><button id="language" aria-label="Switch to English">EN</button></nav></header><main><section class="intro"><div><p class="eyebrow" data-t="eyebrow">MONTRÉAL, QC · RELATIONS INDUSTRIELLES</p><h1 data-t="headline">Un parcours.<br><em>Toute une ville.</em></h1><p class="description" data-t="intro">Moi, c’est Liam. L’humain me passionne, la technologie m’inspire. Bienvenue dans mon petit Montréal.</p><button class="primary" id="tour" data-t="tour">Suivez Pepper →</button><p class="tour-note" data-t="note">6 arrêts pour faire connaissance. À votre rythme.</p></div><div class="city-stamp" aria-hidden="true">45°30′ N<br>73°34′ O<span>AUTOMNE / FALL</span></div></section><section class="map-shell" aria-label="Carte interactive de Montréal"><div class="map-top"><span><i></i> <span data-t="mapTitle">MONTRÉAL EN MINIATURE</span></span><span class="season" data-t="season">● AUTOMNE, 16 °C · IMAGINÉ</span></div><div id="viewport" tabindex="0" aria-label="Carte : glisser pour déplacer, boutons pour zoomer, flèches du clavier pour déplacer"><div id="world"><canvas width="1600" height="1040" id="city" aria-hidden="true"></canvas><div id="stops"></div><div id="pepper" aria-label="Pepper, votre compagnon"><span class="cat"><i></i></span><span>Pepper</span></div></div><div class="map-caption" aria-hidden="true">MONTRÉAL<br><small>Une île, mille possibilités.</small></div></div><div class="map-bottom"><span data-t="hint">Glissez pour explorer · Choisissez un arrêt</span><div class="controls"><button id="motion" aria-pressed="false" aria-label="Mettre les animations en pause">Ⅱ</button><button id="zoom-out" aria-label="Zoom arrière">−</button><button id="reset" data-t="reset">Recentrer</button><button id="zoom-in" aria-label="Zoom avant">+</button></div></div></section><section class="route" aria-label="Arrêts du parcours"><div class="route-heading"><span data-t="line">LIGNE 01 · MON PARCOURS</span><span id="progress">0 / 6</span></div><div id="route-stops"></div></section></main><footer><span data-t="footer">Fait de curiosité. Ancré à Montréal.</span><a href="mailto:liamhellman@gmail.com">liamhellman@gmail.com ↗</a><span>© Liam Hellman 2026</span></footer><dialog id="story" aria-labelledby="story-title"><div class="dialog-top"><span id="story-meta"></span><button id="close" aria-label="Fermer">✕</button></div><div id="story-content"></div><div class="dialog-bottom"><button id="previous" data-t="previous">← Précédent</button><span id="story-count"></span><button id="next" data-t="next">Suivant →</button></div></dialog><div id="announce" class="sr-only" aria-live="polite"></div><noscript>Activez JavaScript pour explorer la carte. Liam Hellman — étudiant en relations industrielles à l’Université de Montréal. Contact : liamhellman@gmail.com.</noscript></body></html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#eeeadd" />
+    <meta
+      name="description"
+      content="Le parcours de Liam Hellman, relations industrielles et informatique, à travers un Montréal miniature."
+    />
+    <title>Liam Hellman · Un parcours montréalais</title>
+    <link rel="icon" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#tour">Explorer mon parcours</a>
+    <header>
+      <a class="brand" href="./"
+        >LH<span
+          >Liam Hellman<small data-t="brand"
+            >Humain. Travail. Montréal.</small
+          ></span
+        ></a
+      >
+      <nav>
+        <a href="mailto:liamhellman@gmail.com" data-t="contact"
+          >Dire bonjour ↗</a
+        ><button id="language" aria-label="Switch to English">EN</button>
+      </nav>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow" data-t="eyebrow">
+            MONTRÉAL, QC · RELATIONS INDUSTRIELLES
+          </p>
+          <h1 data-t="headline">Un parcours.<br /><em>Toute une ville.</em></h1>
+          <p class="description" data-t="intro">
+            Moi, c’est Liam. L’humain me passionne, la technologie m’inspire.
+            Bienvenue dans mon petit Montréal.
+          </p>
+          <button class="primary" id="tour" data-t="tour">
+            Suivez Pepper →
+          </button>
+          <p class="tour-note" data-t="note">
+            6 arrêts pour faire connaissance. À votre rythme.
+          </p>
+        </div>
+        <div class="city-stamp" aria-hidden="true">
+          <span class="stamp-leaf">✦</span>UNE VILLE À EXPLORER<br />UN PARCOURS
+          À DÉCOUVRIR
+        </div>
+      </section>
+      <section class="map-shell" aria-label="Carte interactive de Montréal">
+        <div class="map-top">
+          <span
+            ><i></i> <span data-t="mapTitle">MONTRÉAL EN MINIATURE</span></span
+          ><span class="season" data-t="season">MONTRÉAL · AUTOMNE</span>
+        </div>
+        <div
+          id="viewport"
+          tabindex="0"
+          aria-label="Carte : glisser pour déplacer, boutons pour zoomer, flèches du clavier pour déplacer"
+        >
+          <div id="world">
+            <img
+              id="city"
+              src="assets/montreal-autumn.png"
+              width="1600"
+              height="1040"
+              alt="Montréal miniature en automne : mont Royal, Université de Montréal, triplex, centre-ville et Vieux-Port."
+              draggable="false"
+            />
+            <div class="river-sparkles" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </div>
+            <div class="ferry-lane" aria-hidden="true">
+              <div class="ferry">
+                <svg
+                  viewBox="0 0 52 28"
+                  width="52"
+                  height="28"
+                  shape-rendering="crispEdges"
+                >
+                  <path d="M0 22h24v2H0zM5 26h15v2H5z" fill="#b9d9ce" />
+                  <path d="M12 15h38v5H18v-2h-6z" fill="#f4e6c5" />
+                  <path d="M18 20h27v3H22v-1h-4z" fill="#b45035" />
+                  <path d="M20 7h20v8H20zM25 3h9v4h-9z" fill="#f7eedc" />
+                  <path
+                    d="M23 9h4v4h-4zM30 9h4v4h-4zM37 9h3v4h-3z"
+                    fill="#335b63"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div id="pepper" aria-label="Pepper, votre compagnon">
+              <span class="cat"><i></i></span><span>Pepper</span>
+            </div>
+          </div>
+          <div id="stops"></div>
+          <div class="map-caption" aria-hidden="true">
+            MONTRÉAL<br /><small>Une île, mille possibilités.</small>
+          </div>
+        </div>
+        <div class="map-bottom">
+          <span data-t="hint">Glissez pour explorer · Choisissez un arrêt</span>
+          <div class="controls">
+            <button
+              id="motion"
+              aria-pressed="false"
+              aria-label="Mettre les animations en pause"
+            >
+              Ⅱ</button
+            ><button id="zoom-out" aria-label="Zoom arrière">−</button
+            ><button id="reset" data-t="reset">Recentrer</button
+            ><button id="zoom-in" aria-label="Zoom avant">+</button>
+          </div>
+        </div>
+      </section>
+      <section class="route" aria-label="Arrêts du parcours">
+        <div class="route-heading">
+          <span data-t="line">LIGNE 01 · MON PARCOURS</span
+          ><span id="progress">0 / 6</span>
+        </div>
+        <div id="route-stops"></div>
+      </section>
+    </main>
+    <footer>
+      <span data-t="footer">Fait de curiosité. Ancré à Montréal.</span
+      ><a href="mailto:liamhellman@gmail.com">liamhellman@gmail.com ↗</a
+      ><span>© Liam Hellman 2026</span>
+    </footer>
+    <dialog id="story" aria-labelledby="story-title">
+      <div class="dialog-top">
+        <span id="story-meta"></span
+        ><button id="close" aria-label="Fermer">✕</button>
+      </div>
+      <div id="story-content"></div>
+      <div class="dialog-bottom">
+        <button id="previous" data-t="previous">← Précédent</button
+        ><span id="story-count"></span
+        ><button id="next" data-t="next">Suivant →</button>
+      </div>
+    </dialog>
+    <div id="announce" class="sr-only" aria-live="polite"></div>
+    <noscript
+      >Activez JavaScript pour explorer la carte. Liam Hellman — étudiant en
+      relations industrielles à l’Université de Montréal. Contact :
+      liamhellman@gmail.com.</noscript
+    >
+  </body>
+</html>
